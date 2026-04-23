@@ -144,6 +144,6 @@ Navigate through rooms and avoid enemies.
 |------|------|
 | Chris Lepe Tenorio | blah blah blah |
 | Matthew Guiao | Art & UI |
-| Member 3 | blah blah blah |
+| Justin Adams | Enemy AI |
 | Member 4 | blah blah blah |
 | Member 5 | blah blah blah |

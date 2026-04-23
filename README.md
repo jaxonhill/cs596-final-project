@@ -103,10 +103,6 @@ Navigate through rooms and avoid enemies.
 
 ---
 
-## ⚙️ Project Structure
-
-
----
 
 ## 🔧 Developer Setup
 

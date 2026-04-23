@@ -1,4 +1,4 @@
-# 🗝️ Dungeon Break  
+# 🗝️ Group Dungeon Break  
 A top-down dungeon adventure game where players explore rooms, solve puzzles, defeat enemies, and unlock paths to escape!  
 Each level introduces new mechanics, increasing difficulty, and rewarding exploration and strategy.
 
@@ -65,6 +65,14 @@ The player moves freely in a top-down environment:
 - Final room completes the level  
 
 ---
+
+### Potential X-Factor(s)
+- State Machine enemies?
+  - Variety of enemy types, some with state machine AI for more interesting combat
+- Mobile Port?
+  - Custom UI, control schemes, etc.
+- Custom Shader(s)?
+  - Toon or bitcrush shader
 
 ## 🚀 How to Play
 
@@ -135,7 +143,7 @@ Navigate through rooms and avoid enemies.
 | Name | Role |
 |------|------|
 | Chris Lepe Tenorio | blah blah blah |
-| Member 2 | blah blah blah |
+| Matthew Guiao | Art & UI |
 | Member 3 | blah blah blah |
 | Member 4 | blah blah blah |
 | Member 5 | blah blah blah |

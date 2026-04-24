@@ -142,7 +142,7 @@ Navigate through rooms and avoid enemies.
 
 | Name | Role |
 |------|------|
-| Chris Lepe Tenorio | blah blah blah |
+| Chris Lepe Tenorio | Health, Attack, Patrol Attributes |
 | Matthew Guiao | Art & UI |
 | Justin Adams | Enemy AI |
 | Nathan Morales | blah blah blah |

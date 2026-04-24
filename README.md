@@ -147,4 +147,4 @@ Navigate through rooms and avoid enemies.
 | Justin Adams | Enemy AI |
 | Nathan Morales | blah blah blah |
 | Jaxon Hill | Player & Camera Implementation |
-| Member 6 | blah blah blah |
+| Nazim Sultanov | Level implementation |

@@ -145,6 +145,6 @@ Navigate through rooms and avoid enemies.
 | Chris Lepe Tenorio | Health, Attack, Patrol Attributes |
 | Matthew Guiao | Art & UI |
 | Justin Adams | Enemy AI |
-| Nathan Morales | Level design & Sound |
+| Nathan Morales | Level Design & Sound |
 | Jaxon Hill | Player & Camera Implementation |
 | Nazim Sultanov | Level implementation |

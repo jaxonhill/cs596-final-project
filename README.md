@@ -146,4 +146,5 @@ Navigate through rooms and avoid enemies.
 | Matthew Guiao | Art & UI |
 | Justin Adams | Enemy AI |
 | Nathan Morales | blah blah blah |
-| Member 5 | blah blah blah |
+| Jaxon Hill | Player & Camera Implementation |
+| Member 6 | blah blah blah |

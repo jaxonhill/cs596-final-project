@@ -1,150 +1,109 @@
-# 🗝️ Group Dungeon Break  
-A top-down dungeon adventure game where players explore rooms, solve puzzles, defeat enemies, and unlock paths to escape!  
-Each level introduces new mechanics, increasing difficulty, and rewarding exploration and strategy.
+# Dungeon Break
+- **Group Name:** Team Dungeon Break
+- **Game Name:** Dungeon Break
 
 ---
 
-## 🎮 Game Overview
+# Game Description
 
-**Dungeon Break** is a Unity-based 2D dungeon crawler inspired by classic games like The Legend of Zelda.  
-Players navigate through interconnected rooms, defeat enemies, solve puzzles, and collect keys to unlock new areas.
+**Dungeon Break** is a top-down 2D dungeon adventure game inspired by classic Zelda-style room-based dungeon design. The player explores a stylized dungeon, clears combat and puzzle rooms, collects three magical symbols, and uses those symbols to unlock the final chamber. The game focuses on readable combat, enemy variety, puzzle-based progression, and a polished toon-outlined or pixel style visual style.
 
-- Smooth top-down movement  
-- Room-based dungeon exploration  
-- Puzzle + combat gameplay  
-- Sound effects for actions and feedback  
-- Progressive difficulty through level design  
-- Modular system for easy expansion  
+The core playable slice is one complete dungeon made of a hub room, three enemy challenge rooms, one final puzzle room, and one boss room. Each enemy room introduces a unique enemy interaction that teaches the player a mechanic. The final puzzle and boss then combine those learned mechanics, so the player has to apply what they practiced earlier instead of simply fighting stronger enemies.
+
+Our main **X-factors** are enemy variety and custom shaders. The enemies are not just basic chasers; each type changes how the player approaches combat. One enemy rewards positioning, one turns enemy behavior into a puzzle tool, and one requires timing and projectile reflection. The toon shader gives the game a more distinct visual identity and helps it stand out from a basic 2D dungeon prototype.
 
 ---
 
-## 🧩 Core Features
+# Core Gameplay Goals
 
-### 🗡️ Player Movement & Combat
-The player moves freely in a top-down environment:
-- Use keyboard → move in 4 directions  
-- Attack using a sword or projectile  
-- Collision system handles walls and enemies  
-- Health system (hearts) tracks player damage  
+The player should be able to:
 
----
-
-### 👾 Enemy AI System
-- Enemies have simple but distinct behaviors:
-  - Chaser enemies follow the player  
-  - Ranged enemies attack from a distance  
-- Enemies can damage the player on contact  
-- Rooms can lock until enemies are defeated  
+- Move through a top-down dungeon
+- Attack enemies with a sword
+- Take and deal damage through a health system
+- Clear rooms by defeating enemies or solving room-specific challenges
+- Collect three dungeon symbols
+- Use learned mechanics to solve a final puzzle
+- Defeat a final boss that combines the previous enemy mechanics
 
 ---
 
-### 🧩 Puzzle & Interaction System
-- Pressure plates open doors  
-- Keys unlock locked areas  
-- Switch-based puzzles introduce logic challenges  
-- Encourages exploration and problem-solving  
+# Planned Playable Slice
+
+Our goal is to build a focused, polished vertical slice instead of a large unfinished game.
+
+The minimum playable version will include:
+
+- One player character
+- One sword attack
+- One health system
+- One hub room
+- Three enemy rooms
+- Three unique enemy types
+- One final puzzle room
+- One boss room
+- One main shader and various others where needed
+- Basic sound effects
+- Git repo with clean organization
 
 ---
 
-### 🔊 Sound Effects System
-- Attack sound effects  
-- Enemy hit / defeat sounds  
-- Door unlock and switch activation sounds  
-- No background music (per assignment requirement)
+# X-Factor Features
+
+## Enemy Variety
+
+The game’s main gameplay X-factor is the variety of enemy interactions. Instead of only having enemies chase and damage the player, each enemy type changes the way the player thinks.
+
+These enemies are also reused in the final puzzle and boss fight so the mechanics feel connected.
+
+## Toon Outline Shader
+
+The visual X-factor is a custom toon outline shader or pixel art shader. This will give the game a more stylized, cartoon-like look and help distinguish important objects, enemies, and characters from the background.
+
+The shader may be applied to:
+
+- Player character
+- Enemies
+- Boss
+- Important puzzle objects
+- Environmental props
 
 ---
 
-### 🗺️ Room-Based Level Progression
-- Dungeon is divided into multiple rooms:
-  - Start room (tutorial)  
-  - Combat room  
-  - Puzzle room  
-  - Key room  
-  - Boss/exit room  
-- Doors connect rooms and control progression  
-- Final room completes the level  
+# Group Organization
+
+| Member | Role | Responsibilities |
+|---|---|---|
+| Chris Lepe Tenorio | Health, Attack, Patrol Attributes | Player health, damage logic, attack behavior, patrol-related values |
+| Matthew Guiao | Art & UI | Visual assets, UI elements, symbol icons, player/enemy polish |
+| Justin Adams | Enemy AI | Enemy behavior, state logic, unique enemy interactions |
+| Nathan Morales | Level Design & Sound | Room layouts, puzzle placement, sound effects |
+| Jaxon Hill | Player & Camera Implementation, help with Enemy AI | Player controller, camera follow, core feel, integration support |
+| Nazim Sultanov | Level Implementation | Building rooms in Unity, connecting spaces, implementing level flow |
 
 ---
 
-### Potential X-Factor(s)
-- State Machine enemies?
-  - Variety of enemy types, some with state machine AI for more interesting combat
-- Mobile Port?
-  - Custom UI, control schemes, etc.
-- Custom Shader(s)?
-  - Toon or bitcrush shader
+# Git Repository
 
-## 🚀 How to Play
+The repository will include:
 
-### 1️⃣ Start the Game
-- Open the project in Unity  
-- Load the MainMenu or starting scene  
-- Press Start  
+- Unity project files
+- Organized scene folders
+- Script folders by system
+- Art and sound asset folders
+- README file
+- Initial project skeleton
+- Regular commits from team members
 
 ---
 
-### 2️⃣ Move the Player
-Control the character using:  
-- WASD / Arrow keys  
+# Developer Setup
 
-Navigate through rooms and avoid enemies.
+1. Clone the repository
+2. Open Unity Hub
+3. Select **Open Project**
+4. Choose the project folder
+5. Open the main scene
+6. Press **Play**
 
----
-
-### 3️⃣ Fight Enemies
-- Use attack input to defeat enemies  
-- Some doors remain locked until enemies are cleared  
-
----
-
-### 4️⃣ Solve Puzzles
-- Step on switches  
-- Find keys  
-- Unlock doors to progress  
-
----
-
-### 5️⃣ Reach the Exit
-- Navigate through all rooms  
-- Defeat the boss or unlock the final door  
-- Complete the level  
-
----
-
-
-## 🔧 Developer Setup
-
-1. Clone/download the repository  
-2. Open Unity Hub  
-3. Select Open Project  
-4. Load this project folder  
-5. Open MainMenu or starting scene  
-6. Press ▶ Play  
-
----
-
-## 🛠️ Team Workflow Summary
-
-- Each developer is responsible for a system:
-  - Player mechanics  
-  - Enemy AI  
-  - Puzzle systems  
-  - Level design  
-  - UI / sound  
-- Levels are built using modular rooms  
-- Scripts are reusable across levels  
-- Assets and code managed via GitHub  
-- Features are tested and merged regularly  
-
----
-
-## 👥 Credits
-
-| Name | Role |
-|------|------|
-| Chris Lepe Tenorio | Health, Attack, Patrol Attributes |
-| Matthew Guiao | Art & UI |
-| Justin Adams | Enemy AI |
-| Nathan Morales | Level Design & Sound |
-| Jaxon Hill | Player & Camera Implementation |
-| Nazim Sultanov | Level implementation |
+**Recommended Unity version:** `6000.3.14f1`

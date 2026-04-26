@@ -238,8 +238,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 50
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -331,9 +331,9 @@ MonoBehaviour:
   yaw: 0
   pitch: 45
   distance: 12
-  followLerpSpeed: 9
+  followLerpSpeed: 3.5
   fieldOfView: 50
-  verboseLogs: 1
+  verboseLogs: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,8 +918,8 @@ GameObject:
   - component: {fileID: 1276771951}
   - component: {fileID: 1276771950}
   - component: {fileID: 1276771949}
-  - component: {fileID: 1276771953}
   - component: {fileID: 1276771954}
+  - component: {fileID: 1276771953}
   - component: {fileID: 1276771956}
   - component: {fileID: 1276771955}
   m_Layer: 6
@@ -1036,17 +1036,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a1f313c0b3840a694f4f7028a7be90e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 330585546}
+  capsuleCollider: {fileID: 1276771949}
+  characterController: {fileID: 1276771954}
   moveSpeed: 5
-  acceleration: 20
-  deceleration: 25
-  controllerHeight: 2
-  controllerRadius: 0.5
-  controllerCenter: {x: 0, y: 0, z: 0}
-  stepOffset: 0.3
-  slopeLimit: 45
-  skinWidth: 0.08
-  minMoveDistance: 0
-  verboseLogs: 1
+  acceleration: 32
+  deceleration: 40
+  turnSpeed: 14
 --- !u!143 &1276771954
 CharacterController:
   m_ObjectHideFlags: 0

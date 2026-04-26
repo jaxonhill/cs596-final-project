@@ -237,8 +237,8 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 50
-  orthographic: 1
+  field of view: 60
+  orthographic: 0
   orthographic size: 7
   m_Depth: -1
   m_CullingMask:
@@ -263,7 +263,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
+  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
   m_LocalPosition: {x: 0, y: 6.35, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -325,15 +325,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4c2ffdd6dd245cb87f7ae5b4d17a8ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 1276771952}
-  targetHeightOffset: 1
-  yaw: 0
-  pitch: 45
-  distance: 12
-  followLerpSpeed: 3.5
-  fieldOfView: 50
-  verboseLogs: 0
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFollowPlayer
+  player: {fileID: 1276771952}
+  followDistance: 4
+  heightOffset: 2
+  tiltDown: 20
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,6 +915,7 @@ GameObject:
   - component: {fileID: 1276771950}
   - component: {fileID: 1276771949}
   - component: {fileID: 1276771954}
+  - component: {fileID: 1276771957}
   - component: {fileID: 1276771953}
   - component: {fileID: 1276771956}
   - component: {fileID: 1276771955}
@@ -1035,14 +1032,12 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a1f313c0b3840a694f4f7028a7be90e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 330585546}
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   capsuleCollider: {fileID: 1276771949}
   characterController: {fileID: 1276771954}
   moveSpeed: 5
-  acceleration: 32
-  deceleration: 40
-  turnSpeed: 14
+  accelerationRate: 32
+  decelerationRate: 40
 --- !u!143 &1276771954
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1100,6 +1095,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   totalHealth: 3
   currentHealth: 0
+--- !u!114 &1276771957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276771948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cf705cc934c4d3e945437a39a116152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputManager
+  lockCursorOnStart: 1
+  unlockCursorKey: 27
+  turnSensitivity: 180
+  playerController: {fileID: 1276771953}
 --- !u!1 &1295726616
 GameObject:
   m_ObjectHideFlags: 0
@@ -1666,8 +1677,8 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 330585546}
   - {fileID: 410087041}
+  - {fileID: 330585546}
   - {fileID: 832575519}
   - {fileID: 1295726620}
   - {fileID: 1276771952}

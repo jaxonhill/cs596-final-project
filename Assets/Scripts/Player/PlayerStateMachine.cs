@@ -14,7 +14,7 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("Input")]
     [SerializeField] private string horizontalAxis = "Horizontal";
     [SerializeField] private string verticalAxis = "Vertical";
-    [SerializeField] private string jumpButton = "Jump";
+    [SerializeField] private KeyCode jumpKey = KeyCode.Space;
     [SerializeField] private KeyCode rollKey = KeyCode.LeftShift;
     [SerializeField] private string turnAxis = "Mouse X";
 
@@ -137,7 +137,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void ReadInput()
     {
         MoveInput = new Vector2(Input.GetAxisRaw(horizontalAxis), Input.GetAxisRaw(verticalAxis));
-        JumpPressed = Input.GetButtonDown(jumpButton);
+        JumpPressed = Input.GetKeyDown(jumpKey);
         RollPressed = Input.GetKeyDown(rollKey);
         TurnInput = Input.GetAxis(turnAxis);
     }

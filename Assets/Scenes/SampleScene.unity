@@ -542,7 +542,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 0.6, z: 0}
 --- !u!114 &1276771955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,7 +593,7 @@ MonoBehaviour:
   unlockCursorKey: 27
   horizontalAxis: Horizontal
   verticalAxis: Vertical
-  jumpButton: Jump
+  jumpKey: 32
   rollKey: 304
   turnAxis: Mouse X
   turnSensitivity: 180

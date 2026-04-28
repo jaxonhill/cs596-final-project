@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using TriInspector;
 using UnityEngine;
 
@@ -12,12 +11,12 @@ namespace Enemies
     
         [Header("Health")]
         [SerializeField] protected int health = 3;
-        [Tooltip("The length of time an enemy is invincible for after being damaged.")]
-        [SerializeField] protected float iframes = 4;
+        [Tooltip("The length of time an enemy is invincible for after being damaged."),SerializeField] 
+        protected float iframes = 4;
 
-        [Header("Player Tracking"), SerializeField]
-        
-        protected int movementSpeed = 1;
+        [Header("Player Tracking")]
+         
+        [SerializeField] protected int movementSpeed = 1;
         [Tooltip("The distance that an enemy can detect a player from."), SerializeField]
         protected int detectionRange = 10;
 
@@ -30,16 +29,30 @@ namespace Enemies
         protected int attackRange = 1;
 
 
-        [Title("Patrolling"), Tooltip("The positions that enemies will move to when not chasing the player."),
-         SerializeField]
+        [Title("Patrolling")]
         
+        [Tooltip("The positions that enemies will move to when not chasing the player."), SerializeField]
         private List<Transform> patrol_spots;
-        /// <summary> The current target position the enemy will attempt to move to </summary>
-        public Vector3 target_pos;
-        private Stack<Vector3> curPath;
-        public List<Vector3> publicPath;
-        private bool search = true;
+        
+        /* * * * * * * * * * * *
+         * Components of Enemy *
+         * * * * * * * * * * * */
+        
         private Rigidbody rb;
+        
+        /* * * * * * * *
+         * Pathfinding *
+         * * * * * * * */
+        
+        /// <summary> The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)</summary>
+        private Stack<Vector3> curPath;
+
+        /// <summary> The current target position the enemy will attempt to move to </summary>
+        public Vector3 target_pos = Vector3.zero;
+        
+        /// <summary> Whether the enemy needs to build a path to a new position </summary>
+        private bool search = true;
+        
     
     
         /// <summary> The five different states an Enemy could be in; Patrolling, Chasing, Attacking, Damaged, Dead.  </summary>
@@ -58,12 +71,10 @@ namespace Enemies
             NStates = 5 // Tracks the amount of states
         }
 
+        /// <summary> The current state of the enemy </summary>
         protected EnemyState state = EnemyState.Patrolling;
 
-        void Start()
-        {
-            rb = GetComponent<Rigidbody>();
-        }
+        private void Start() {  rb = GetComponent<Rigidbody>(); }
 
         private void Update()
         {
@@ -90,21 +101,24 @@ namespace Enemies
 
         protected virtual void Patrol()
         {
-            if (search)
+            if (search) // If the enemy needs to create a Path to a new location
             {
-                search = false;
-                curPath = AStarSearch.Search(gameObject, patrol_spots[0].position);
-                publicPath = curPath.ToList();
-                target_pos = curPath.Pop();
+                search = false; // Set search as false (The enemy is creating a new path / already has a path)
+                curPath = AStarSearch.Search(gameObject, patrol_spots[0].position); // Find a path between the enemy's current position and the goal one
+                target_pos = curPath.Pop(); // Pop the first target position from the path stack
             }
 
+            // If the enemy has not yet reached the target position
             if (Vector3.Distance(gameObject.transform.position, target_pos) >= 1)
             {
+                // Move towards the target position
                 var new_pos = Vector3.MoveTowards(transform.position, target_pos, movementSpeed * Time.deltaTime);
                 rb.Move(new_pos, new Quaternion(0,0,0,1));
             }
+            // If the enemy has reached the target position
             else if (curPath.Count != 0)
-            {
+            {   
+                // Pop the next target position from the current path
                 target_pos = curPath.Pop();
             }
 

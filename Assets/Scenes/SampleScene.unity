@@ -491,9 +491,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.497418
+  m_Height: 1.5
   m_Direction: 1
-  m_Center: {x: 0, y: -0.25129098, z: 0}
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!33 &1276771951
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -511,7 +511,7 @@ Transform:
   m_GameObject: {fileID: 1276771948}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.85, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -542,7 +542,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &1276771955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,14 +593,20 @@ MonoBehaviour:
   unlockCursorKey: 27
   horizontalAxis: Horizontal
   verticalAxis: Vertical
+  jumpButton: Jump
   turnAxis: Mouse X
   turnSensitivity: 180
   moveSpeed: 5
   accelerationRate: 32
   decelerationRate: 40
+  jumpHeight: 2
+  gravity: -25
+  groundedVerticalVelocity: -2
   movementInputThreshold: 0.001
   idleAnimationStateName: Idle
   moveAnimationStateName: Move
+  jumpAnimationStateName: Jump
+  fallAnimationStateName: Fall
   animationCrossFadeDuration: 0.1
 --- !u!1 &1295726616
 GameObject:
@@ -708,7 +714,7 @@ Transform:
   m_GameObject: {fileID: 1295726616}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -732,7 +738,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4684403152539725594, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4684403152539725594, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_LocalPosition.z

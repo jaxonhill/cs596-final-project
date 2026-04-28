@@ -11,21 +11,21 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] private bool lockCursorOnStart = true;
     [SerializeField] private KeyCode unlockCursorKey = KeyCode.Escape;
 
-    [Header("Input")]
-    [SerializeField] private string horizontalAxis = "Horizontal";
-    [SerializeField] private string verticalAxis = "Vertical";
-    [SerializeField] private string turnAxis = "Mouse X";
-    [SerializeField] private float turnSensitivity = 180f;
-
     [Header("Movement")]
+    [SerializeField] private float turnSensitivity = 180f;
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float accelerationRate = 32f;
     [SerializeField] private float decelerationRate = 40f;
+    [SerializeField] private float jumpHeight = 1.5f;
+    [SerializeField] private float gravity = -25f;
+    [SerializeField] private float groundedVerticalVelocity = -2f;
     [SerializeField] private float movementInputThreshold = 0.001f;
 
     [Header("Animation")]
     [SerializeField] private string idleAnimationStateName = "Idle";
     [SerializeField] private string moveAnimationStateName = "Move";
+    [SerializeField] private string jumpAnimationStateName = "Jump";
+    [SerializeField] private string fallAnimationStateName = "Fall";
     [SerializeField] private float animationCrossFadeDuration = 0.1f;
 
     private float movementThresholdSqr;
@@ -33,24 +33,35 @@ public class PlayerStateMachine : MonoBehaviour
     private PlayerBaseState currentState;
     private PlayerIdleState idleState;
     private PlayerMoveState moveState;
+    private PlayerJumpState jumpState;
+    private PlayerFallState fallState;
 
     public PlayerBaseState CurrentState => currentState;
     public PlayerIdleState IdleState => idleState;
     public PlayerMoveState MoveState => moveState;
+    public PlayerJumpState JumpState => jumpState;
+    public PlayerFallState FallState => fallState;
 
     public Vector2 MoveInput { get; private set; }
     public float TurnInput { get; private set; }
+    public bool JumpPressed { get; private set; }
     public Vector3 HorizontalVelocity { get; set; }
+    public float VerticalVelocity { get; set; }
 
     public bool HasMoveInput => MoveInput.sqrMagnitude > movementThresholdSqr;
+    public bool IsGrounded => characterController.isGrounded;
     public float MovementThresholdSqr => movementThresholdSqr;
     public CharacterController CharacterController => characterController;
     public Animator Animator => animator;
     public float MoveSpeed => moveSpeed;
     public float AccelerationRate => accelerationRate;
     public float DecelerationRate => decelerationRate;
+    public float Gravity => gravity;
+    public float GroundedVerticalVelocity => groundedVerticalVelocity;
     public string IdleAnimationStateName => idleAnimationStateName;
     public string MoveAnimationStateName => moveAnimationStateName;
+    public string JumpAnimationStateName => jumpAnimationStateName;
+    public string FallAnimationStateName => fallAnimationStateName;
     public float AnimationCrossFadeDuration => animationCrossFadeDuration;
 
     private void Awake()
@@ -58,6 +69,8 @@ public class PlayerStateMachine : MonoBehaviour
         movementThresholdSqr = movementInputThreshold * movementInputThreshold;
         idleState = new PlayerIdleState(this);
         moveState = new PlayerMoveState(this);
+        jumpState = new PlayerJumpState(this);
+        fallState = new PlayerFallState(this);
     }
 
     private void Start()
@@ -67,7 +80,7 @@ public class PlayerStateMachine : MonoBehaviour
             LockCursor();
         }
 
-        SwitchState(idleState);
+        SwitchState(IsGrounded ? idleState : fallState);
     }
 
     private void Update()
@@ -94,8 +107,34 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void ReadInput()
     {
-        MoveInput = new Vector2(Input.GetAxisRaw(horizontalAxis), Input.GetAxisRaw(verticalAxis));
-        TurnInput = Input.GetAxis(turnAxis);
+        MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        JumpPressed = Input.GetButtonDown("Jump");
+        TurnInput = Input.GetAxis("Mouse X");
+    }
+
+    public void ApplyLocomotion()
+    {
+        Vector2 clampedInput = Vector2.ClampMagnitude(MoveInput, 1f);
+        Vector3 moveDirection = (transform.right * clampedInput.x + transform.forward * clampedInput.y).normalized;
+        Vector3 targetVelocity = moveDirection * moveSpeed;
+
+        float blendRate = clampedInput.sqrMagnitude > movementThresholdSqr ? accelerationRate : decelerationRate;
+        HorizontalVelocity = Vector3.MoveTowards(HorizontalVelocity, targetVelocity, blendRate * Time.deltaTime);
+
+        if (IsGrounded && VerticalVelocity < 0f)
+        {
+            VerticalVelocity = groundedVerticalVelocity;
+        }
+
+        VerticalVelocity += gravity * Time.deltaTime;
+
+        Vector3 totalVelocity = HorizontalVelocity + Vector3.up * VerticalVelocity;
+        characterController.Move(totalVelocity * Time.deltaTime);
+    }
+
+    public void Jump()
+    {
+        VerticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
     }
 
     private void TurnPlayer()

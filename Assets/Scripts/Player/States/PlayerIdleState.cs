@@ -22,6 +22,18 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
+        if (Ctx.JumpPressed && Ctx.IsGrounded)
+        {
+            Ctx.SwitchState(Ctx.JumpState);
+            return;
+        }
+
+        if (!Ctx.IsGrounded)
+        {
+            Ctx.SwitchState(Ctx.FallState);
+            return;
+        }
+
         if (Ctx.HasMoveInput)
         {
             Ctx.SwitchState(Ctx.MoveState);

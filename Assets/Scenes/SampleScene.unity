@@ -594,6 +594,7 @@ MonoBehaviour:
   horizontalAxis: Horizontal
   verticalAxis: Vertical
   jumpButton: Jump
+  rollKey: 304
   turnAxis: Mouse X
   turnSensitivity: 180
   moveSpeed: 5
@@ -603,10 +604,16 @@ MonoBehaviour:
   gravity: -25
   groundedVerticalVelocity: -2
   movementInputThreshold: 0.001
+  rollSpeed: 15
+  rollDuration: 0.5
   idleAnimationStateName: Idle
   moveAnimationStateName: Move
   jumpAnimationStateName: Jump
   fallAnimationStateName: Fall
+  rollForwardAnimationStateName: RollForward
+  rollBackwardAnimationStateName: RollBackward
+  rollLeftAnimationStateName: RollLeft
+  rollRightAnimationStateName: RollRight
   animationCrossFadeDuration: 0.1
 --- !u!1 &1295726616
 GameObject:

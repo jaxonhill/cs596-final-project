@@ -20,6 +20,12 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
+        if (Ctx.RollPressed && Ctx.IsGrounded)
+        {
+            Ctx.SwitchState(Ctx.RollState);
+            return;
+        }
+
         if (Ctx.JumpPressed && Ctx.IsGrounded)
         {
             Ctx.SwitchState(Ctx.JumpState);

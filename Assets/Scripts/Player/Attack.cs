@@ -35,12 +35,4 @@ public class Attack : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (CompareTag("Player") && Input.GetKeyDown(KeyCode.Space))
-        {
-            TryAttack();   
-        }
-    }
 }

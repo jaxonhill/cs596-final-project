@@ -606,10 +606,21 @@ MonoBehaviour:
   movementInputThreshold: 0.001
   rollSpeed: 15
   rollDuration: 0.5
+  swordAttackHitboxPrefab: {fileID: 6904962620256523602, guid: c4abc1fb9607e4a4592b0ef525f6c136, type: 3}
+  swordAttackDamage: 1
+  swordAttackTargetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  swordAttackDuration: 0.55
+  swordAttackHitboxDelay: 0.15
+  swordAttackLungeSpeed: 3.5
+  swordAttackLungeDuration: 0.12
+  swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
   idleAnimationStateName: Idle
   moveAnimationStateName: Move
   jumpAnimationStateName: Jump
   fallAnimationStateName: Fall
+  swordAttackAnimationStateName: SwordAttack
   rollForwardAnimationStateName: RollForward
   rollBackwardAnimationStateName: RollBackward
   rollLeftAnimationStateName: RollLeft

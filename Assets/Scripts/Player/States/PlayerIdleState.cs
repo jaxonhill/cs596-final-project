@@ -22,6 +22,12 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
+        if (Ctx.SwordAttackPressed && Ctx.IsGrounded)
+        {
+            Ctx.SwitchState(Ctx.SwordAttackState);
+            return;
+        }
+
         if (Ctx.RollPressed && Ctx.IsGrounded)
         {
             Ctx.SwitchState(Ctx.RollState);

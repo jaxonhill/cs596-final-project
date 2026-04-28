@@ -32,11 +32,22 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] private float rollSpeed = 8f;
     [SerializeField] private float rollDuration = 0.8f;
 
+    [Header("Sword Attack")]
+    [SerializeField] private GameObject swordAttackHitboxPrefab;
+    [SerializeField] private int swordAttackDamage = 1;
+    [SerializeField] private LayerMask swordAttackTargetLayers = ~0;
+    [SerializeField] private float swordAttackDuration = 0.55f;
+    [SerializeField] private float swordAttackHitboxDelay = 0.15f;
+    [SerializeField] private float swordAttackLungeSpeed = 3.5f;
+    [SerializeField] private float swordAttackLungeDuration = 0.12f;
+    [SerializeField] private Vector3 swordAttackHitboxLocalOffset = new Vector3(0f, 1f, 1f);
+
     [Header("Animation")]
     [SerializeField] private string idleAnimationStateName = "Idle";
     [SerializeField] private string moveAnimationStateName = "Move";
     [SerializeField] private string jumpAnimationStateName = "Jump";
     [SerializeField] private string fallAnimationStateName = "Fall";
+    [SerializeField] private string swordAttackAnimationStateName = "SwordAttack";
     [SerializeField] private string rollForwardAnimationStateName = "RollForward";
     [SerializeField] private string rollBackwardAnimationStateName = "RollBackward";
     [SerializeField] private string rollLeftAnimationStateName = "RollLeft";
@@ -51,10 +62,16 @@ public class PlayerStateMachine : MonoBehaviour
     private PlayerJumpState jumpState;
     private PlayerFallState fallState;
     private PlayerRollState rollState;
+    private PlayerSwordAttackState swordAttackState;
 
     private Vector3 rollDirection;
     private string currentRollAnimationStateName;
     private float rollEndTime;
+    private Vector3 swordAttackDirection;
+    private float swordAttackEndTime;
+    private float swordAttackHitboxSpawnTime;
+    private float swordAttackLungeEndTime;
+    private bool swordAttackHitboxSpawned;
 
     public PlayerBaseState CurrentState => currentState;
     public PlayerIdleState IdleState => idleState;
@@ -62,17 +79,20 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerJumpState JumpState => jumpState;
     public PlayerFallState FallState => fallState;
     public PlayerRollState RollState => rollState;
+    public PlayerSwordAttackState SwordAttackState => swordAttackState;
 
     public Vector2 MoveInput { get; private set; }
     public float TurnInput { get; private set; }
     public bool JumpPressed { get; private set; }
     public bool RollPressed { get; private set; }
+    public bool SwordAttackPressed { get; private set; }
     public Vector3 HorizontalVelocity { get; set; }
     public float VerticalVelocity { get; set; }
 
     public bool HasMoveInput => MoveInput.sqrMagnitude > movementThresholdSqr;
     public bool IsGrounded => characterController.isGrounded;
     public bool IsRollFinished => Time.time >= rollEndTime;
+    public bool IsSwordAttackFinished => Time.time >= swordAttackEndTime;
     public float MovementThresholdSqr => movementThresholdSqr;
     public CharacterController CharacterController => characterController;
     public Animator Animator => animator;
@@ -86,6 +106,7 @@ public class PlayerStateMachine : MonoBehaviour
     public string MoveAnimationStateName => moveAnimationStateName;
     public string JumpAnimationStateName => jumpAnimationStateName;
     public string FallAnimationStateName => fallAnimationStateName;
+    public string SwordAttackAnimationStateName => swordAttackAnimationStateName;
     public string CurrentRollAnimationStateName => currentRollAnimationStateName;
     public float AnimationCrossFadeDuration => animationCrossFadeDuration;
 
@@ -97,6 +118,7 @@ public class PlayerStateMachine : MonoBehaviour
         jumpState = new PlayerJumpState(this);
         fallState = new PlayerFallState(this);
         rollState = new PlayerRollState(this);
+        swordAttackState = new PlayerSwordAttackState(this);
     }
 
     private void Start()
@@ -139,6 +161,7 @@ public class PlayerStateMachine : MonoBehaviour
         MoveInput = new Vector2(Input.GetAxisRaw(horizontalAxis), Input.GetAxisRaw(verticalAxis));
         JumpPressed = Input.GetKeyDown(jumpKey);
         RollPressed = Input.GetKeyDown(rollKey);
+        SwordAttackPressed = Input.GetMouseButtonDown(0);
         TurnInput = Input.GetAxis(turnAxis);
     }
 
@@ -172,6 +195,32 @@ public class PlayerStateMachine : MonoBehaviour
         MoveWithGravity(rollDirection * rollSpeed);
     }
 
+    public void BeginSwordAttack()
+    {
+        swordAttackDirection = GetDesiredActionDirection();
+        swordAttackEndTime = Time.time + swordAttackDuration;
+        swordAttackHitboxSpawnTime = Time.time + swordAttackHitboxDelay;
+        swordAttackLungeEndTime = Time.time + swordAttackLungeDuration;
+        swordAttackHitboxSpawned = false;
+        HorizontalVelocity = Vector3.zero;
+
+        if (IsGrounded && VerticalVelocity < 0f)
+        {
+            VerticalVelocity = groundedVerticalVelocity;
+        }
+    }
+
+    public void UpdateSwordAttack()
+    {
+        if (!swordAttackHitboxSpawned && Time.time >= swordAttackHitboxSpawnTime)
+        {
+            SpawnSwordAttackHitbox();
+        }
+
+        Vector3 attackVelocity = Time.time < swordAttackLungeEndTime ? swordAttackDirection * swordAttackLungeSpeed : Vector3.zero;
+        MoveWithGravity(attackVelocity);
+    }
+
     public void Jump()
     {
         VerticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -192,7 +241,30 @@ public class PlayerStateMachine : MonoBehaviour
         characterController.Move(totalVelocity * Time.deltaTime);
     }
 
-    private Vector3 GetDesiredRollDirection()
+    private void SpawnSwordAttackHitbox()
+    {
+        swordAttackHitboxSpawned = true;
+
+        if (swordAttackHitboxPrefab == null)
+        {
+            Debug.LogWarning("Sword attack hitbox prefab is not assigned.", this);
+            return;
+        }
+
+        Vector3 spawnPosition = transform.TransformPoint(swordAttackHitboxLocalOffset);
+        GameObject spawnedHitbox = Instantiate(swordAttackHitboxPrefab, spawnPosition, transform.rotation);
+        SwordAttackHitbox hitbox = spawnedHitbox.GetComponent<SwordAttackHitbox>();
+
+        if (hitbox != null)
+        {
+            hitbox.Initialize(gameObject, swordAttackDamage, swordAttackTargetLayers);
+            return;
+        }
+
+        Debug.LogWarning("Sword attack hitbox prefab is missing a SwordAttackHitbox component.", spawnedHitbox);
+    }
+
+    private Vector3 GetDesiredActionDirection()
     {
         if (!HasMoveInput)
         {
@@ -201,6 +273,11 @@ public class PlayerStateMachine : MonoBehaviour
 
         Vector2 clampedInput = Vector2.ClampMagnitude(MoveInput, 1f);
         return (transform.right * clampedInput.x + transform.forward * clampedInput.y).normalized;
+    }
+
+    private Vector3 GetDesiredRollDirection()
+    {
+        return GetDesiredActionDirection();
     }
 
     private string GetClosestRollAnimationStateName(Vector3 desiredDirection)

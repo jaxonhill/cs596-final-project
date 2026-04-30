@@ -35,12 +35,13 @@ namespace NPCs.States
         private List<Transform> patrol_markers => patrol.patrol_markers;
         /// Index representing the current patrol destination in patrol markers
         private int patrol_index;
+
+        private bool pause_patrol;
         
         
         
         /// <summary> The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)</summary>
         private Stack<Vector3> curPath;
-        
         
         
         /* * * * * * * * * * *
@@ -61,7 +62,9 @@ namespace NPCs.States
 
         public override async UniTask Run()
         {
-            await Patrol();
+            FindPrimaryTarget();
+            if (pause_patrol) return;
+            Patrol();
         }
         
         public override void Exit() { }
@@ -73,15 +76,20 @@ namespace NPCs.States
         /// <summary> Implementation for making an Enemy follow a given path </summary>
         private async UniTask Patrol()
         {
-            
             // If the enemy has not yet reached the target position, move towards it
             if (!enemy.AtDestination()) { enemy.MoveTowardsDestination(); }
             
             // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position
             else if (!NoPath()){ enemy.SetTargetPos(curPath.Pop()); /* Pop the next target position from the current path */ }
-            
+
             // If the Stack is empty, make a new path
-            else { await UniTask.Delay(2); SetNewPath(); }
+            else
+            {
+                pause_patrol = true;
+                await UniTask.Delay(2000); 
+                SetNewPath();
+                pause_patrol = false;
+            }
         }
         
         /// <summary> Implementation for creating a new Enemy Path, based on the Patrol Type </summary>
@@ -113,7 +121,8 @@ namespace NPCs.States
         private void FindPrimaryTarget()
         {
             var targets = GetFriendliesInView();
-            Transform target = targets[0];
+            if (targets.Count <= 0) return;
+            var target = targets[0];
             float min_distance = int.MaxValue;
             foreach (var t in targets)
             {

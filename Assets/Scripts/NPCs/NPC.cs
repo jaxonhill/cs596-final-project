@@ -37,13 +37,15 @@ namespace NPCs
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
         protected IdleState idleState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        protected IdleState chaseStatae;
+        protected ChaseState chaseState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        protected IdleState attackState;
+        protected SearchState searchState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        protected IdleState damagedState;
+        protected AttackState attackState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        protected IdleState dieState;
+        protected DamagedState damagedState;
+        /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
+        protected DieState dieState;
         
         
         /* * * * * * * * 
@@ -67,7 +69,13 @@ namespace NPCs
         protected void Awake() { rb = GetComponent<Rigidbody>(); }
         
         // Set the starting state to "Idle"
-        protected void Start() {
+        protected void Start()
+        {
+            chaseState = new(this);
+            searchState = new(this);
+            damagedState = new(this);
+            dieState = new(this);
+            
             state = idleState;
             state.Enter(); }
 
@@ -79,11 +87,17 @@ namespace NPCs
 
         public void ChangeToState(NPCStateEnum newState)
         {
-            switch (newState)
+            state.Exit();
+            state = newState switch
             {
-                case NPCStateEnum.Idle:
-                    break;
-            }
+                NPCStateEnum.Idle => idleState,
+                NPCStateEnum.Chasing => chaseState,
+                NPCStateEnum.Searching => searchState,
+                NPCStateEnum.Attacking => attackState,
+                NPCStateEnum.Damaged => damagedState,
+                NPCStateEnum.Death => dieState,
+                _ => state
+            };
             state.Enter();
         }
         
@@ -95,7 +109,7 @@ namespace NPCs
         private bool WithinLocation(float distance, Vector3 location) { return Vector3.Distance(position, location) < distance; }
         
         /// <summary> Returns true if an NPC is within 1 unit from a coordinate </summary>
-        private bool AtLocation(Vector3 location) { return WithinLocation(1, location); }
+        public bool AtLocation(Vector3 location) { return WithinLocation(1, location); }
         
         /// <summary> Returns true if an NPC is within 1 unit of their given target position </summary>
         public bool AtDestination(){return AtLocation(target_pos);}
@@ -105,7 +119,7 @@ namespace NPCs
         // HDESC: Methods for moving an NPC
 
         /// Move the NPC gradually towards a given location
-        private void MoveTowardsLocation(Vector3 location)
+        public void MoveTowardsLocation(Vector3 location)
         {
             // Move gradually towards the new position
             var new_pos = Vector3.MoveTowards(position, location, movementSpeed * Time.deltaTime);
@@ -117,15 +131,12 @@ namespace NPCs
         /// <summary> Move the NPC gradually towards their target position </summary>
         public void MoveTowardsDestination() { MoveTowardsLocation(target_pos); }
         
-        /// <summary> Return the movement speed of the NPC </summary>
-        public int GetSpeed() { return movementSpeed; }
-        
         /// Set the new target position for this NPC
         public void SetTargetPos(Vector3 target_p) {target_pos = target_p;}
         
         // HEADER: DIRECTION
 
-        protected Vector3 GetDirection(Vector3 destination) { return Vector3.Normalize(destination - transform.position); }
+        private Vector3 GetDirection(Vector3 destination) { return Vector3.Normalize(destination - transform.position); }
 
         /// Return whether the given coordinate is in front of the NPC
         public bool InFront(Vector3 coordinate) { return Vector3.Dot(normalized, GetDirection(coordinate)) > 0; }
@@ -133,6 +144,10 @@ namespace NPCs
         // HEADER: GETTERS
         
         public int GetDetectionRange(){return detectionRange;}
+        
+        public Transform GetTarget(){return target;}
+        
+        public Vector3 GetPosition() {return position;}
 
         // HEADER: SETTERS
         

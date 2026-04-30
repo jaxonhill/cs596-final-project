@@ -25,8 +25,6 @@ namespace NPCs.Enemies
         
         /// <summary> Return the Patrol Object for this enemy </summary>
         public PatrolObject GetPatrolObject() { return patrolObject; }
-        
-        public Vector3 GetPosition() {return position;}
     }
     
 }

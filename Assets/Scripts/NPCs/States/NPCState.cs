@@ -10,9 +10,10 @@ namespace NPCs.States
         {
             Idle = 0,
             Chasing = 1, 
-            Attacking = 2,
-            Damaged = 3,
-            Death = 4
+            Searching = 2,
+            Attacking = 3,
+            Damaged = 4,
+            Death = 5
         }
         
         /// Functionality to execute when entering this state

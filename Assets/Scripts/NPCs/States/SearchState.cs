@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 
 namespace NPCs.States
 {
-    public class DamagedState : NPCState
+    public class SearchState : NPCState
     {
         
         /* * * * * * * * * *
@@ -10,11 +10,11 @@ namespace NPCs.States
          * * * * * * * * * */
         private readonly NPC npc;
         
-        public DamagedState(NPC new_npc) { npc = new_npc; }
+        public SearchState(NPC new_npc) { npc = new_npc; }
         
         public override void Enter()
         {
-        
+            
         }
 
         public override UniTask Run()
@@ -24,6 +24,9 @@ namespace NPCs.States
 
         public override void Exit()
         {
+            
         }
+        
+        
     }
 }

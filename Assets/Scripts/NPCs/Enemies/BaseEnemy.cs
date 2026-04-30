@@ -1,4 +1,7 @@
 using NPCs.States;
+using NPCs.States.Chase;
+using NPCs.States.Idle;
+using static NPCs.States.NPCState;
 using UnityEngine;
 
 namespace NPCs.Enemies 
@@ -9,6 +12,8 @@ namespace NPCs.Enemies
         /// <summary> Object used for storing information on an enemy's patrolling </summary>
         [SerializeField] private PatrolObject patrolObject = new();
         
+        /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
+        private SearchState searchState;
         
         [SerializeField] private GameObject player;
         
@@ -17,9 +22,27 @@ namespace NPCs.Enemies
         protected new void Start() {
             PatrolState patrolState = new (this);
             idleState = patrolState;
+            EnemyChaseState eChaseState = new(this);
+            chaseState = eChaseState;
+            searchState = new(this);
+            
             GlobalGameManager.AddEnemy(transform);
             base.Start(); }
         
+        public new void ChangeToState(NPCStateEnum newState)
+        {
+            if (newState == NPCStateEnum.Searching)
+            {
+                state.Exit();
+                state = searchState;
+                state.Enter();
+            }
+            else
+            {
+                base.ChangeToState(newState);
+            }
+            
+        }
         
         // HEADER: GET Methods
         

@@ -33,13 +33,11 @@ namespace NPCs
          * States *
          * * * * **/
         /// <summary> The current state of the enemy </summary>
-        private NPCState state;
+        protected NPCState state;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
         protected IdleState idleState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
         protected ChaseState chaseState;
-        /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        protected SearchState searchState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
         protected AttackState attackState;
         /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
@@ -62,7 +60,7 @@ namespace NPCs
          * * * * * * * * * * * */
         private Rigidbody rb { get; set; }
         protected Vector3 position => transform.position;
-        private Vector3 normalized => position.normalized;
+        private Vector3 normalized => transform.forward.normalized;
 
         
         // Initialize any needed components of the Enemy
@@ -71,8 +69,6 @@ namespace NPCs
         // Set the starting state to "Idle"
         protected void Start()
         {
-            chaseState = new(this);
-            searchState = new(this);
             damagedState = new(this);
             dieState = new(this);
             
@@ -92,7 +88,6 @@ namespace NPCs
             {
                 NPCStateEnum.Idle => idleState,
                 NPCStateEnum.Chasing => chaseState,
-                NPCStateEnum.Searching => searchState,
                 NPCStateEnum.Attacking => attackState,
                 NPCStateEnum.Damaged => damagedState,
                 NPCStateEnum.Death => dieState,
@@ -136,10 +131,13 @@ namespace NPCs
         
         // HEADER: DIRECTION
 
-        private Vector3 GetDirection(Vector3 destination) { return Vector3.Normalize(destination - transform.position); }
+        public Vector3 GetDirection(Vector3 coordinate) { return Vector3.Normalize(coordinate - transform.position); }
 
         /// Return whether the given coordinate is in front of the NPC
-        public bool InFront(Vector3 coordinate) { return Vector3.Dot(normalized, GetDirection(coordinate)) > 0; }
+        public bool InFront(Vector3 coordinate)
+        {
+            return Vector3.Dot(normalized, GetDirection(coordinate)) >= 0;
+        }
         
         // HEADER: GETTERS
         
@@ -148,9 +146,14 @@ namespace NPCs
         public Transform GetTarget(){return target;}
         
         public Vector3 GetPosition() {return position;}
-
+        
         // HEADER: SETTERS
         
         public void SetTarget(Transform t) { target = t; }
+
+        public void SetMovementSpeed(int speed)
+        {
+            movementSpeed = speed;
+        }
     }
 }

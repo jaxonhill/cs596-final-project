@@ -5,7 +5,7 @@ using NPCs.Enemies;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace NPCs.States
+namespace NPCs.States.Idle
 {
     public class PatrolState : IdleState
     {
@@ -39,7 +39,6 @@ namespace NPCs.States
         private bool pause_patrol;
         
         
-        
         /// <summary> The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)</summary>
         private Stack<Vector3> curPath;
         
@@ -58,7 +57,13 @@ namespace NPCs.States
         // HEADER: STATE METHODS
 
         // Set patrol index to the first patrol position in the given list (Default), and create a new path 
-        public override void Enter() { patrol_index = 0; SetNewPath(); }
+        public override void Enter()
+        {
+            patrol_index = 0;
+            enemy.SetTarget(null);;
+            SetNewPath();
+            enemy.SetMovementSpeed(10);
+        }
 
         public override async UniTask Run()
         {
@@ -127,17 +132,12 @@ namespace NPCs.States
             foreach (var t in targets)
             {
                 var dist = Vector3.Distance(enemy.GetPosition(), t.position);
-                if (dist < min_distance)
-                {
-                    min_distance = dist;
-                    target = t;
-                }
+                if (!(dist < min_distance)) continue;
+                min_distance = dist;
+                target = t;
             }
 
-            if (target)
-            {
-                ChaseTarget(target);
-            }
+            if (target) { ChaseTarget(target); }
         }
 
         private List<Transform> GetFriendliesInView()
@@ -146,7 +146,7 @@ namespace NPCs.States
             var friendlies_in_front = friendlies_list.Where(friendly => enemy.InFront(friendly.position));
             var friendlies_in_view = friendlies_in_front.Where(friendly =>
             {
-                Physics.Raycast(enemy.GetPosition(), friendly.position, out var hit, enemy.GetDetectionRange());
+                Physics.Raycast(enemy.GetPosition(), enemy.GetDirection(friendly.position), out var hit, enemy.GetDetectionRange());
                 return hit.transform && (hit.transform.CompareTag("Friendly") || hit.transform.CompareTag("Player"));
             }).ToList();
             return friendlies_in_view;

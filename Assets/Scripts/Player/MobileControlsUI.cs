@@ -3,8 +3,10 @@ using UnityEngine.EventSystems;
 
 public class MobileControlsUI : MonoBehaviour
 {
-    [Header("Required References")]
+    [Header("Player Input")]
     [SerializeField] private PlayerInputReader playerInput;
+    [SerializeField] private bool autoConnectPlayerInput = true;
+    [SerializeField] private string playerTag = "Player";
 
     [Header("Movement Joystick")]
     [SerializeField] private RectTransform movementJoystickPad;
@@ -24,6 +26,9 @@ public class MobileControlsUI : MonoBehaviour
     private int activeJumpSwipePointerId;
     private Vector2 jumpSwipeStartPosition;
     private float jumpSwipeStartTime;
+    private bool loggedMissingPlayerInput;
+    private bool loggedInvalidPlayerInput;
+    private bool loggedInvalidPlayerTag;
 
     private void Awake()
     {
@@ -36,6 +41,11 @@ public class MobileControlsUI : MonoBehaviour
         }
 
         LogRequiredReferences();
+    }
+
+    private void Start()
+    {
+        TryConnectPlayerInput();
     }
 
     private void OnDisable()
@@ -55,6 +65,16 @@ public class MobileControlsUI : MonoBehaviour
             return;
         }
 
+        if (!IsScenePlayerInput(playerInput))
+        {
+            Debug.LogWarning($"MobileControlsUI received PlayerInputReader reference on {playerInput.name}, but it is not a loaded scene instance. Leave prefab Player Input empty or assign the scene Player instance.", this);
+            playerInput = null;
+            TryConnectPlayerInput();
+            return;
+        }
+
+        loggedMissingPlayerInput = false;
+        loggedInvalidPlayerInput = false;
         Debug.Log($"MobileControlsUI connected to PlayerInputReader on {playerInput.name}.", this);
     }
 
@@ -293,18 +313,162 @@ public class MobileControlsUI : MonoBehaviour
 
     private bool HasPlayerInput()
     {
-        if (playerInput != null)
+        if (IsScenePlayerInput(playerInput))
         {
             return true;
         }
 
-        Debug.LogError($"MobileControlsUI requires PlayerInputReader assigned to '{nameof(playerInput)}' on {name}.", this);
+        if (playerInput != null)
+        {
+            if (!loggedInvalidPlayerInput)
+            {
+                Debug.LogWarning($"MobileControlsUI ignored PlayerInputReader reference on {playerInput.name} because it is not a loaded scene instance. This usually means the GameUI prefab was assigned to the Player prefab asset instead of the scene Player.", this);
+                loggedInvalidPlayerInput = true;
+            }
+
+            playerInput = null;
+        }
+
+        if (TryConnectPlayerInput())
+        {
+            return true;
+        }
+
+        if (!loggedMissingPlayerInput)
+        {
+            Debug.LogError($"MobileControlsUI could not find a valid PlayerInputReader for {name}. Add one active scene Player with tag '{playerTag}', or assign a scene PlayerInputReader manually.", this);
+            loggedMissingPlayerInput = true;
+        }
+
         return false;
+    }
+
+    private bool TryConnectPlayerInput()
+    {
+        if (IsScenePlayerInput(playerInput))
+        {
+            return true;
+        }
+
+        if (!autoConnectPlayerInput)
+        {
+            return false;
+        }
+
+        PlayerInputReader[] playerInputs = Object.FindObjectsByType<PlayerInputReader>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        PlayerInputReader onlyValidPlayerInput = null;
+        PlayerInputReader taggedPlayerInput = null;
+        int validPlayerInputCount = 0;
+        int taggedPlayerInputCount = 0;
+
+        foreach (PlayerInputReader candidate in playerInputs)
+        {
+            if (!IsAutoConnectCandidate(candidate))
+            {
+                continue;
+            }
+
+            validPlayerInputCount++;
+            onlyValidPlayerInput = candidate;
+
+            if (IsTaggedPlayer(candidate))
+            {
+                taggedPlayerInputCount++;
+                taggedPlayerInput = candidate;
+            }
+        }
+
+        if (taggedPlayerInputCount == 1)
+        {
+            ConnectResolvedPlayerInput(taggedPlayerInput, "tagged scene Player");
+            return true;
+        }
+
+        if (taggedPlayerInputCount > 1)
+        {
+            Debug.LogError($"MobileControlsUI found {taggedPlayerInputCount} active PlayerInputReader components tagged '{playerTag}' in scene '{gameObject.scene.name}'. Assign Player Input manually for {name}.", this);
+            return false;
+        }
+
+        if (validPlayerInputCount == 1)
+        {
+            ConnectResolvedPlayerInput(onlyValidPlayerInput, "only scene PlayerInputReader");
+            return true;
+        }
+
+        if (validPlayerInputCount > 1)
+        {
+            Debug.LogError($"MobileControlsUI found {validPlayerInputCount} active PlayerInputReader components in scene '{gameObject.scene.name}' but none are uniquely tagged '{playerTag}'. Assign Player Input manually for {name}.", this);
+        }
+
+        return false;
+    }
+
+    private void ConnectResolvedPlayerInput(PlayerInputReader resolvedPlayerInput, string sourceDescription)
+    {
+        playerInput = resolvedPlayerInput;
+        loggedMissingPlayerInput = false;
+        loggedInvalidPlayerInput = false;
+        Debug.Log($"MobileControlsUI auto-connected to PlayerInputReader on {playerInput.name} using {sourceDescription}.", this);
+    }
+
+    private bool IsAutoConnectCandidate(PlayerInputReader candidate)
+    {
+        return candidate != null
+            && candidate.enabled
+            && candidate.gameObject.activeInHierarchy
+            && candidate.gameObject.scene == gameObject.scene;
+    }
+
+    private bool IsScenePlayerInput(PlayerInputReader candidate)
+    {
+        return candidate != null
+            && candidate.gameObject.scene.IsValid()
+            && candidate.gameObject.scene.isLoaded;
+    }
+
+    private bool IsTaggedPlayer(PlayerInputReader candidate)
+    {
+        if (string.IsNullOrEmpty(playerTag))
+        {
+            return false;
+        }
+
+        try
+        {
+            return candidate.CompareTag(playerTag);
+        }
+        catch (UnityException)
+        {
+            if (!loggedInvalidPlayerTag)
+            {
+                Debug.LogError($"MobileControlsUI cannot auto-connect by tag because '{playerTag}' is not defined in the Unity Tag Manager.", this);
+                loggedInvalidPlayerTag = true;
+            }
+
+            return false;
+        }
     }
 
     private void LogRequiredReferences()
     {
-        LogRequiredReference(playerInput, nameof(playerInput), typeof(PlayerInputReader).Name);
+        if (IsScenePlayerInput(playerInput))
+        {
+            Debug.Log($"MobileControlsUI found scene PlayerInputReader reference on {playerInput.name}.", this);
+        }
+        else if (playerInput != null)
+        {
+            Debug.LogWarning($"MobileControlsUI has a PlayerInputReader reference on {playerInput.name}, but it is not a loaded scene instance. Auto-connect will search for the scene Player instead.", this);
+        }
+        else if (autoConnectPlayerInput)
+        {
+            Debug.Log($"MobileControlsUI will auto-connect PlayerInputReader for {name}.", this);
+        }
+        else
+        {
+            Debug.LogError($"MobileControlsUI requires PlayerInputReader assigned to '{nameof(playerInput)}' on {name} because auto-connect is disabled.", this);
+        }
+
         LogRequiredReference(movementJoystickPad, nameof(movementJoystickPad), typeof(RectTransform).Name);
         LogRequiredReference(movementJoystickNub, nameof(movementJoystickNub), typeof(RectTransform).Name);
     }

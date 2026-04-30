@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Enemies
+namespace NPCs
 {
     
     /// <summary> Class used for implementing A* Search, which is used for Enemy Pathfinding </summary>
@@ -34,12 +33,12 @@ namespace Enemies
         }
 
         /// <summary> Use A* Search to find a path between a Starting and Goal position </summary>
-        public static Stack<Vector3> Search(GameObject entity, Vector3 goal)
+        public static Stack<Vector3> Search(Transform entity, Vector3 goal)
         {
             //HEADER: __Initializations__ 
             
-            var start = entity.transform.position; // The Entity's Starting Position
-            var size = entity.transform.localScale; // Size of the entity
+            var start = entity.position; // The Entity's Starting Position
+            var size = entity.localScale; // Size of the entity
             
             var openList = new List<AStarNode>(); // Queue for storing unchecked positions
             var closedList = new List<AStarNode>(); // Queue for storing already checked positions

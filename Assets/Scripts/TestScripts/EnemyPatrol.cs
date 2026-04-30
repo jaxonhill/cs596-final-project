@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class EnemyPatrol : MonoBehaviour
 {
-    
-    
     public Transform pointA;
     public Transform pointB;
 

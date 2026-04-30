@@ -6,13 +6,13 @@ public class PlayerSwordAttackState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.BeginSwordAttack();
-        Ctx.Animator.CrossFade(Ctx.SwordAttackAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        player.PlayerCombat.BeginSwordAttack();
+        player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
     }
 
     public override void UpdateState()
     {
-        Ctx.UpdateSwordAttack();
+        player.PlayerCombat.UpdateSwordAttack();
     }
 
     public override void ExitState()
@@ -21,17 +21,17 @@ public class PlayerSwordAttackState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (!Ctx.IsSwordAttackFinished)
+        if (!player.PlayerCombat.IsSwordAttackFinished)
         {
             return;
         }
 
-        if (!Ctx.IsGrounded)
+        if (!player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.FallState);
+            player.SwitchState(player.FallState);
             return;
         }
 
-        Ctx.SwitchState(Ctx.HasMoveInput ? Ctx.MoveState : Ctx.IdleState);
+        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
     }
 }

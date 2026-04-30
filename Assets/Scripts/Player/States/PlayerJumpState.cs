@@ -6,13 +6,13 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.Jump();
-        Ctx.Animator.CrossFade(Ctx.JumpAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        player.PlayerMotor.Jump();
+        player.PlayerAnimator.Play(PlayerAnimation.JUMP);
     }
 
     public override void UpdateState()
     {
-        Ctx.ApplyLocomotion();
+        player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
     }
 
     public override void ExitState()
@@ -21,9 +21,9 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (Ctx.VerticalVelocity <= 0f)
+        if (player.PlayerMotor.VerticalVelocity <= 0f)
         {
-            Ctx.SwitchState(Ctx.FallState);
+            player.SwitchState(player.FallState);
         }
     }
 }

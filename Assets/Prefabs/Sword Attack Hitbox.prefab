@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3336539236553835356}
   - component: {fileID: 3733275586503949665}
   - component: {fileID: 9124035224156492317}
-  - component: {fileID: 4389808236206741020}
   m_Layer: 0
   m_Name: Sword Attack Hitbox
   m_TagString: Untagged
@@ -113,16 +112,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4389808236206741020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6904962620256523602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b305aeba55c14d81baf1ac95dd74752, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SwordAttackHitbox
-  lifetime: 0.1

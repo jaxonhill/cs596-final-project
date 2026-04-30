@@ -461,9 +461,11 @@ GameObject:
   - component: {fileID: 1276771951}
   - component: {fileID: 1276771949}
   - component: {fileID: 1276771954}
+  - component: {fileID: 1276771959}
+  - component: {fileID: 1276771958}
+  - component: {fileID: 1276771957}
   - component: {fileID: 1276771956}
   - component: {fileID: 1276771955}
-  - component: {fileID: 1276771957}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -552,15 +554,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1276771948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d4c6feac081437ea4f8382939144aaa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 1
-  attackRange: 1
-  attackCooldown: 2
-  targetLayer:
-    serializedVersion: 2
-    m_Bits: 128
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
 --- !u!114 &1276771956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,11 +566,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1276771948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93b9b8e8278b646619d0235a526be917, type: 3}
+  m_Script: {fileID: 11500000, guid: f36f6c5443f04f659696ea227e79bbcc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  totalHealth: 3
-  currentHealth: 0
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  motor: {fileID: 1276771958}
+  swordAttackHitboxPrefab: {fileID: 6904962620256523602, guid: c4abc1fb9607e4a4592b0ef525f6c136, type: 3}
+  swordAttackDamage: 1
+  swordAttackDuration: 0.5
+  swordAttackHitboxDelay: 0.25
+  swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
 --- !u!114 &1276771957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,48 +584,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 1276771948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d4c6feac081437ea4f8382939144aaa, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e31811abd2140358bf139420a29041d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
+  animator: {fileID: 1635271528}
+  crossFadeDuration: 0.1
+--- !u!114 &1276771958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276771948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd91a5838c1948cda7de22b1a3bf025c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMotor
   characterController: {fileID: 1276771954}
-  animator: {fileID: 1635271529}
-  lockCursorOnStart: 1
-  unlockCursorKey: 27
-  horizontalAxis: Horizontal
-  verticalAxis: Vertical
-  jumpKey: 32
-  rollKey: 304
-  turnAxis: Mouse X
   turnSensitivity: 180
   moveSpeed: 5
-  accelerationRate: 32
-  decelerationRate: 40
-  jumpHeight: 2
+  moveAccelerationRate: 40
   gravity: -25
+  jumpHeight: 1.5
   groundedVerticalVelocity: -2
+  rollSpeed: 8
+  rollDuration: 0.8
+--- !u!114 &1276771959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1276771948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26ba12fa57964cdcb8fa151634e9258c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputReader
+  jumpKey: 32
+  rollKey: 304
   movementInputThreshold: 0.001
-  rollSpeed: 15
-  rollDuration: 0.5
-  swordAttackHitboxPrefab: {fileID: 6904962620256523602, guid: c4abc1fb9607e4a4592b0ef525f6c136, type: 3}
-  swordAttackDamage: 1
-  swordAttackTargetLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  swordAttackDuration: 0.55
-  swordAttackHitboxDelay: 0.15
-  swordAttackLungeSpeed: 3.5
-  swordAttackLungeDuration: 0.12
-  swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
-  idleAnimationStateName: Idle
-  moveAnimationStateName: Move
-  jumpAnimationStateName: Jump
-  fallAnimationStateName: Fall
-  swordAttackAnimationStateName: SwordAttack
-  rollForwardAnimationStateName: RollForward
-  rollBackwardAnimationStateName: RollBackward
-  rollLeftAnimationStateName: RollLeft
-  rollRightAnimationStateName: RollRight
-  animationCrossFadeDuration: 0.1
 --- !u!1 &1295726616
 GameObject:
   m_ObjectHideFlags: 0
@@ -746,6 +745,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1276771952}
     m_Modifications:
+    - target: {fileID: 1701902819692513601, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3961768964356977922, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -790,6 +793,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5003047110509551044, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5082574569444486177, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_Controller
       value: 
@@ -800,7 +807,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5352958571798197664, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_Name
-      value: MaleCharacterPolyart
+      value: RiggedAsset
       objectReference: {fileID: 0}
     - target: {fileID: 6337321041487551411, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
       propertyPath: m_IsActive
@@ -816,7 +823,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4684403152539725594, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
   m_PrefabInstance: {fileID: 1635271526}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &1635271529 stripped
+--- !u!95 &1635271528 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5082574569444486177, guid: c564c8c0d0cdc45429417f315e9f3e41, type: 3}
   m_PrefabInstance: {fileID: 1635271526}

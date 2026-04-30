@@ -6,13 +6,14 @@ public class PlayerRollState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.BeginRoll();
-        Ctx.Animator.CrossFade(Ctx.CurrentRollAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        PlayerAnimation rollAnimation = player.PlayerMotor.GetClosestRollAnimation(player.PlayerInput.MoveInput);
+        player.PlayerMotor.BeginRoll(player.PlayerInput.MoveInput);
+        player.PlayerAnimator.Play(rollAnimation);
     }
 
     public override void UpdateState()
     {
-        Ctx.ApplyRollMovement();
+        player.PlayerMotor.ApplyRollMovement();
     }
 
     public override void ExitState()
@@ -21,17 +22,17 @@ public class PlayerRollState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (!Ctx.IsRollFinished)
+        if (!player.PlayerMotor.IsRollFinished)
         {
             return;
         }
 
-        if (!Ctx.IsGrounded)
+        if (!player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.FallState);
+            player.SwitchState(player.FallState);
             return;
         }
 
-        Ctx.SwitchState(Ctx.HasMoveInput ? Ctx.MoveState : Ctx.IdleState);
+        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
     }
 }

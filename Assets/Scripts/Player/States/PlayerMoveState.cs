@@ -6,12 +6,12 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.Animator.CrossFade(Ctx.MoveAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        player.PlayerAnimator.Play(PlayerAnimation.MOVE_F);
     }
 
     public override void UpdateState()
     {
-        Ctx.ApplyLocomotion();
+        player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
     }
 
     public override void ExitState()
@@ -20,33 +20,33 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (Ctx.SwordAttackPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsSwordAttackPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.SwordAttackState);
+            player.SwitchState(player.SwordAttackState);
             return;
         }
 
-        if (Ctx.RollPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsRollPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.RollState);
+            player.SwitchState(player.RollState);
             return;
         }
 
-        if (Ctx.JumpPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsJumpPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.JumpState);
+            player.SwitchState(player.JumpState);
             return;
         }
 
-        if (!Ctx.IsGrounded)
+        if (!player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.FallState);
+            player.SwitchState(player.FallState);
             return;
         }
 
-        if (!Ctx.HasMoveInput)
+        if (!player.PlayerInput.IsTryingToMove)
         {
-            Ctx.SwitchState(Ctx.IdleState);
+            player.SwitchState(player.IdleState);
         }
     }
 }

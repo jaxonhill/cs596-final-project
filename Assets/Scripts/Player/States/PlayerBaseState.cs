@@ -1,10 +1,10 @@
 public abstract class PlayerBaseState
 {
-    protected readonly PlayerStateMachine Ctx;
+    protected readonly PlayerStateMachine player;
 
     protected PlayerBaseState(PlayerStateMachine currentContext)
     {
-        Ctx = currentContext;
+        player = currentContext;
     }
 
     public abstract void EnterState();

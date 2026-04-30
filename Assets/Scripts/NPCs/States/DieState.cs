@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using NPCs.Enemies;
 
 namespace NPCs.States
 {
@@ -12,18 +13,19 @@ namespace NPCs.States
         
         public DieState(NPC new_npc) { npc = new_npc; }
         
-        public override void Enter()
+        // ReSharper disable Unity.PerformanceAnalysis
+        public override async void Enter()
         {
-        
+            GlobalGameManager.RemoveEnemy(npc.transform);
+            await UniTask.Delay(1000);
+            Exit();
         }
 
-        public override UniTask Run()
-        {
-            return UniTask.CompletedTask;
-        }
+        public override UniTask Run() { return UniTask.CompletedTask; }
 
         public override void Exit()
         {
+            Destroy(npc);
         }
     }
 }

@@ -412,6 +412,7 @@ GameObject:
   - component: {fileID: 153167683}
   - component: {fileID: 153167682}
   - component: {fileID: 153167687}
+  - component: {fileID: 153167688}
   m_Layer: 0
   m_Name: TestEnemy
   m_TagString: Enemy
@@ -444,7 +445,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &153167683
 BoxCollider:
@@ -551,8 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb4546201007a6349a7abf41baf6a4cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeEnemy
-  health: 3
-  iframes: 4
+  iframes: 200
   movementSpeed: 15
   detectionRange: 15
   damage: 1
@@ -566,6 +566,20 @@ MonoBehaviour:
     - {fileID: 1757061161}
     - {fileID: 1716966878}
   player: {fileID: 51008464}
+--- !u!114 &153167688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153167681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93b9b8e8278b646619d0235a526be917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  totalHealth: 3
+  currentHealth: 0
 --- !u!1 &337044709
 GameObject:
   m_ObjectHideFlags: 0

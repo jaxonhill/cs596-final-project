@@ -14,7 +14,6 @@ namespace NPCs.States
         /* * * * * * * * * *
          * NPC Components  *
          * * * * * * * * * */
-        protected readonly NPC npc;
 
         public ChaseState(NPC new_npc) { npc = new_npc; }
 

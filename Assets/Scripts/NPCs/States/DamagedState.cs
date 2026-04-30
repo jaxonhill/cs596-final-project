@@ -11,19 +11,27 @@ namespace NPCs.States
         private readonly NPC npc;
         
         public DamagedState(NPC new_npc) { npc = new_npc; }
-        
-        public override void Enter()
+
+        // ReSharper disable Unity.PerformanceAnalysis
+        public override async void Enter()
         {
-        
+            if (npc.GetHealth() <= 0)
+            {
+                npc.ChangeToState(NPCStateEnum.Death);
+            }
+            npc.SetMovementSpeed(0);
+            await UniTask.Delay(npc.GetIFrames());
+            if (npc.GetTarget() != null)
+            {
+                npc.ChangeToState(NPCStateEnum.Chasing);
+                return;
+            }
+            npc.ChangeToState(NPCStateEnum.Idle);
         }
 
-        public override UniTask Run()
-        {
-            return UniTask.CompletedTask;
-        }
+        public override UniTask Run() { return UniTask.CompletedTask; }
 
         public override void Exit()
-        {
-        }
+        { }
     }
 }

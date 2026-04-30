@@ -6,6 +6,8 @@ namespace NPCs.States
     public abstract class NPCState : MonoBehaviour
     {
 
+        protected NPC npc;
+
         public enum NPCStateEnum
         {
             Idle = 0,

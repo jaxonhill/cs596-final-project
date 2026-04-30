@@ -5,16 +5,15 @@ using UnityEngine;
 
 namespace NPCs
 {
+    [RequireComponent(typeof(Health))]
     /// <summary> Abstract Class for creating ally and enemy NPCs </summary>
     public abstract class NPC : MonoBehaviour
     {
     
         [Title("Stat Values")] 
-    
-        [Header("Health")]
-        [SerializeField] protected int health = 3;
+            
         [Tooltip("The length of time an NPC is invincible for after being damaged."),SerializeField] 
-        protected float iframes = 4;
+        protected int iframes = 200;
         
         [Header("Tracking"), SerializeField]
         protected int movementSpeed = 1;
@@ -61,10 +60,15 @@ namespace NPCs
         private Rigidbody rb { get; set; }
         protected Vector3 position => transform.position;
         private Vector3 normalized => transform.forward.normalized;
+        private Health health { get; set; }
 
         
         // Initialize any needed components of the Enemy
-        protected void Awake() { rb = GetComponent<Rigidbody>(); }
+        protected void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+            health = GetComponent<Health>();
+        }
         
         // Set the starting state to "Idle"
         protected void Start()
@@ -139,6 +143,15 @@ namespace NPCs
             return Vector3.Dot(normalized, GetDirection(coordinate)) >= 0;
         }
         
+        // HEADER: DAMAGE
+
+        public void OnDamaged(int damage)
+        {
+            if (state is DamagedState or DieState) return;
+            health.DamageTaken(damage);
+            ChangeToState(NPCStateEnum.Damaged);
+        }
+        
         // HEADER: GETTERS
         
         public int GetDetectionRange(){return detectionRange;}
@@ -146,6 +159,21 @@ namespace NPCs
         public Transform GetTarget(){return target;}
         
         public Vector3 GetPosition() {return position;}
+
+        public NPCState GetState()
+        {
+            return state;
+        }
+
+        public int GetIFrames()
+        {
+            return iframes;
+        }
+
+        public int GetHealth()
+        {
+            return health.currentHealth;
+        }
         
         // HEADER: SETTERS
         

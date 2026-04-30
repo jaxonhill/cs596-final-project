@@ -65,14 +65,15 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
-        if (hasSwordAttackHitboxSpawned)
+        if (!hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxSpawnTime)
         {
-            if (Time.time >= swordAttackHitboxSpawnTime) {
-                SpawnSwordAttackHitbox();
-            }
-            if (Time.time >= swordAttackHitboxEndTime) {
-                Destroy(spawnedHitbox);
-            }
+            SpawnSwordAttackHitbox();
+        }
+
+        if (hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxEndTime)
+        {
+            Destroy(spawnedHitbox);
+            spawnedHitbox = null;
         }
     }
 

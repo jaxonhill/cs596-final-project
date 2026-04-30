@@ -17,8 +17,40 @@ public class PlayerCombat : MonoBehaviour
 
     public bool IsSwordAttackFinished => Time.time >= swordAttackHitboxEndTime;
 
+    private void Awake()
+    {
+        if (motor == null)
+        {
+            Debug.LogError($"PlayerCombat requires PlayerMotor assigned to '{nameof(motor)}' on {name}.", this);
+        }
+        else
+        {
+            Debug.Log($"PlayerCombat found required PlayerMotor reference on {name}.", this);
+        }
+
+        if (swordAttackHitboxPrefab == null)
+        {
+            Debug.LogError($"PlayerCombat requires sword attack hitbox prefab assigned to '{nameof(swordAttackHitboxPrefab)}' on {name}.", this);
+        }
+        else
+        {
+            Debug.Log($"PlayerCombat found required sword attack hitbox prefab reference on {name}.", this);
+        }
+
+        if (motor == null || swordAttackHitboxPrefab == null)
+        {
+            enabled = false;
+        }
+    }
+
     public void BeginSwordAttack()
     {
+        if (motor == null)
+        {
+            Debug.LogError($"PlayerCombat cannot begin sword attack because '{nameof(motor)}' is missing on {name}.", this);
+            return;
+        }
+
         swordAttackHitboxEndTime = Time.time + swordAttackDuration;
         swordAttackHitboxSpawnTime = Time.time + swordAttackHitboxDelay;
         hasSwordAttackHitboxSpawned = false;
@@ -27,6 +59,12 @@ public class PlayerCombat : MonoBehaviour
 
     public void UpdateSwordAttack()
     {
+        if (swordAttackHitboxPrefab == null)
+        {
+            Debug.LogError($"PlayerCombat cannot update sword attack because '{nameof(swordAttackHitboxPrefab)}' is missing on {name}.", this);
+            return;
+        }
+
         if (hasSwordAttackHitboxSpawned)
         {
             if (Time.time >= swordAttackHitboxSpawnTime) {

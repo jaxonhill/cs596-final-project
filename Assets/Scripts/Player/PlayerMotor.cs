@@ -18,8 +18,20 @@ public class PlayerMotor : MonoBehaviour
 
     public Vector3 HorizontalVelocity { get; private set; }
     public float VerticalVelocity { get; private set; }
-    public bool IsGrounded => characterController.isGrounded;
+    public bool IsGrounded => characterController != null && characterController.isGrounded;
     public bool IsRollFinished => Time.time >= rollEndTime;
+
+    private void Awake()
+    {
+        if (characterController == null)
+        {
+            Debug.LogError($"PlayerMotor requires CharacterController assigned to '{nameof(characterController)}' on {name}.", this);
+            enabled = false;
+            return;
+        }
+
+        Debug.Log($"PlayerMotor found required CharacterController reference on {name}.", this);
+    }
 
     public void StopHorizontalMovement()
     {
@@ -97,6 +109,12 @@ public class PlayerMotor : MonoBehaviour
 
     public void MoveWithGravity(Vector3 horizontalMovement)
     {
+        if (characterController == null)
+        {
+            Debug.LogError($"PlayerMotor cannot move because '{nameof(characterController)}' is missing on {name}.", this);
+            return;
+        }
+
         HorizontalVelocity = horizontalMovement;
         SnapToGroundedVelocity();
 

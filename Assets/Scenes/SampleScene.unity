@@ -557,6 +557,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4c6feac081437ea4f8382939144aaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
+  playerInput: {fileID: 1276771959}
+  playerMotor: {fileID: 1276771958}
+  playerAnimator: {fileID: 1276771957}
+  playerCombat: {fileID: 1276771956}
 --- !u!114 &1276771956
 MonoBehaviour:
   m_ObjectHideFlags: 0

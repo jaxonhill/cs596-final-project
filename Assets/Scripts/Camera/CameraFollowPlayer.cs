@@ -13,10 +13,30 @@ public class CameraFollowPlayer : MonoBehaviour
     [Range(0f, 60f)]
     [SerializeField] private float tiltDown = 30f;
 
+    private bool loggedMissingPlayer;
+
+    private void Awake()
+    {
+        if (player == null)
+        {
+            Debug.LogError($"CameraFollowPlayer requires player Transform assigned to '{nameof(player)}' on {name}.", this);
+            loggedMissingPlayer = true;
+            return;
+        }
+
+        Debug.Log($"CameraFollowPlayer found required player Transform reference on {name}.", this);
+    }
+
     private void LateUpdate()
     {
         if (player == null)
         {
+            if (!loggedMissingPlayer)
+            {
+                Debug.LogError($"CameraFollowPlayer requires player Transform assigned to '{nameof(player)}' on {name}.", this);
+                loggedMissingPlayer = true;
+            }
+
             return;
         }
 

@@ -6,6 +6,12 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerCombat))]
 public class PlayerStateMachine : MonoBehaviour
 {
+    [Header("Required References")]
+    [SerializeField] private PlayerInputReader playerInput;
+    [SerializeField] private PlayerMotor playerMotor;
+    [SerializeField] private PlayerAnimator playerAnimator;
+    [SerializeField] private PlayerCombat playerCombat;
+
     private PlayerBaseState currentState;
     private PlayerIdleState idleState;
     private PlayerMoveState moveState;
@@ -14,10 +20,10 @@ public class PlayerStateMachine : MonoBehaviour
     private PlayerRollState rollState;
     private PlayerSwordAttackState swordAttackState;
 
-    public PlayerInputReader PlayerInput { get; private set; }
-    public PlayerMotor PlayerMotor { get; private set; }
-    public PlayerAnimator PlayerAnimator { get; private set; }
-    public PlayerCombat PlayerCombat { get; private set; }
+    public PlayerInputReader PlayerInput => playerInput;
+    public PlayerMotor PlayerMotor => playerMotor;
+    public PlayerAnimator PlayerAnimator => playerAnimator;
+    public PlayerCombat PlayerCombat => playerCombat;
 
     public PlayerBaseState CurrentState => currentState;
     public PlayerIdleState IdleState => idleState;
@@ -41,6 +47,8 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Awake()
     {
+        LogRequiredReferences();
+
         idleState = new PlayerIdleState(this);
         moveState = new PlayerMoveState(this);
         jumpState = new PlayerJumpState(this);
@@ -51,6 +59,13 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Start()
     {
+        if (!HasRequiredReferences())
+        {
+            Debug.LogError("PlayerStateMachine cannot start because one or more required references are missing.", this);
+            enabled = false;
+            return;
+        }
+
         SwitchState(idleState);
     }
 
@@ -65,5 +80,32 @@ public class PlayerStateMachine : MonoBehaviour
 
         currentState.UpdateState();
         currentState.CheckSwitchStates();
+    }
+
+    private bool HasRequiredReferences()
+    {
+        return playerInput != null
+            && playerMotor != null
+            && playerAnimator != null
+            && playerCombat != null;
+    }
+
+    private void LogRequiredReferences()
+    {
+        LogRequiredReference(playerInput, nameof(playerInput), typeof(PlayerInputReader).Name);
+        LogRequiredReference(playerMotor, nameof(playerMotor), typeof(PlayerMotor).Name);
+        LogRequiredReference(playerAnimator, nameof(playerAnimator), typeof(PlayerAnimator).Name);
+        LogRequiredReference(playerCombat, nameof(playerCombat), typeof(PlayerCombat).Name);
+    }
+
+    private void LogRequiredReference(Object reference, string fieldName, string componentName)
+    {
+        if (reference == null)
+        {
+            Debug.LogError($"PlayerStateMachine requires {componentName} assigned to '{fieldName}' on {name}.", this);
+            return;
+        }
+
+        Debug.Log($"PlayerStateMachine found required {componentName} reference on {name}.", this);
     }
 }

@@ -1,0 +1,37 @@
+public class PlayerSwordAttackState : PlayerBaseState
+{
+    public PlayerSwordAttackState(PlayerStateMachine currentContext) : base(currentContext)
+    {
+    }
+
+    public override void EnterState()
+    {
+        player.PlayerCombat.BeginSwordAttack();
+        player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
+    }
+
+    public override void UpdateState()
+    {
+        player.PlayerCombat.UpdateSwordAttack();
+    }
+
+    public override void ExitState()
+    {
+    }
+
+    public override void CheckSwitchStates()
+    {
+        if (!player.PlayerCombat.IsSwordAttackFinished)
+        {
+            return;
+        }
+
+        if (!player.PlayerMotor.IsGrounded)
+        {
+            player.SwitchState(player.FallState);
+            return;
+        }
+
+        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+    }
+}

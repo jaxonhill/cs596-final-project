@@ -1,34 +1,46 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
+public enum PlayerAnimation
+{
+    IDLE,
+    MOVE_R,
+    MOVE_L,
+    MOVE_F,
+    MOVE_B,
+    JUMP,
+    FALL,
+    SWORD_ATTACK,
+    ROLL_R,
+    ROLL_L,
+    ROLL_F,
+    ROLL_B,
+}
+
 public class PlayerAnimator : MonoBehaviour
 {
-    [Header("Required Components")]
     [SerializeField] private Animator animator;
-    [SerializeField] private CharacterController characterController;
-
-    [Header("Animator Parameters")]
-    [SerializeField] private string isMovingParameter = "IsMoving";
-
-    [Header("Movement Detection")]
-    [SerializeField] private float movementSpeedThreshold = 0.05f;
-
-    private int isMovingParameterHash;
+    [SerializeField] private float crossFadeDuration = 0.1f;
 
     private void Awake()
     {
-        isMovingParameterHash = Animator.StringToHash(isMovingParameter);
+        if (animator == null)
+        {
+            Debug.LogError($"PlayerAnimator requires Animator assigned to '{nameof(animator)}' on {name}.", this);
+            enabled = false;
+            return;
+        }
+
+        Debug.Log($"PlayerAnimator found required Animator reference on {name}.", this);
     }
 
-    private void LateUpdate()
+    public void Play(PlayerAnimation animation)
     {
-        Vector3 horizontalVelocity = characterController.velocity;
-        horizontalVelocity.y = 0f;
+        if (animator == null)
+        {
+            Debug.LogWarning("Player Animator is not assigned.", this);
+            return;
+        }
 
-        float speedSqr = horizontalVelocity.sqrMagnitude;
-        float thresholdSqr = movementSpeedThreshold * movementSpeedThreshold;
-        bool isMoving = speedSqr > thresholdSqr;
-
-        animator.SetBool(isMovingParameterHash, isMoving);
+        animator.CrossFade(animation.ToString(), crossFadeDuration, 0);
     }
 }

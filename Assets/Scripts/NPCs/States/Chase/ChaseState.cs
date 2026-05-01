@@ -29,7 +29,7 @@ namespace NPCs.States
 
             if (CheckIfInRange())
             {
-                //npc.ChangeToState(NPCStateEnum.Attacking);
+                npc.ChangeToState(NPCStateEnum.Attacking);
             }
             return UniTask.CompletedTask;
         }

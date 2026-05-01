@@ -73,6 +73,7 @@ namespace NPCs
         // Set the starting state to "Idle"
         protected void Start()
         {
+            attackState = new(this);
             damagedState = new(this);
             dieState = new(this);
             

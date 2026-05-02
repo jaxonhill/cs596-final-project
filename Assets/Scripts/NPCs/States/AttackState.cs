@@ -7,6 +7,8 @@ namespace NPCs.States
     {
         
         private NPC npc;
+        
+        private Vector3 position => npc.transform.position;
 
         public AttackState(NPC this_npc)
         {
@@ -18,9 +20,9 @@ namespace NPCs.States
         {
             var size = npc.transform.localScale;
             await UniTask.Delay(1000);
-            Physics.BoxCast(npc.GetPosition() + (npc.transform.forward * 2), size/2,
+            Physics.BoxCast(position + (npc.transform.forward * 2), size/2,
                 Vector3.zero, out RaycastHit hit);
-            Gizmos.DrawCube(npc.GetPosition() + (npc.transform.forward * 2), size);
+            Gizmos.DrawCube(position + (npc.transform.forward * 2), size);
             if (hit.transform && hit.transform.CompareTag("Player"))
             {
                 // Functionality for player damage here

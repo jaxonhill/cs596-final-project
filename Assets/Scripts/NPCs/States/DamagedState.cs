@@ -13,14 +13,13 @@ namespace NPCs.States
         public DamagedState(NPC new_npc) { npc = new_npc; }
 
         // ReSharper disable Unity.PerformanceAnalysis
-        public override async void Enter()
+        public override void Enter()
         {
-            if (npc.GetHealth() <= 0)
+            if (npc.health.GetValue() <= 0)
             {
                 npc.ChangeToState(NPCStateEnum.Death);
             }
-            npc.SetMovementSpeed(0);
-            await UniTask.Delay(npc.GetIFrames());
+            npc.movement.SetValue(0);
             if (npc.GetTarget() != null)
             {
                 npc.ChangeToState(NPCStateEnum.Chasing);

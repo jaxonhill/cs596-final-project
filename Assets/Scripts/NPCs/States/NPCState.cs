@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace NPCs.States
 {
-    public abstract class NPCState : MonoBehaviour
+    public abstract class NPCState 
     {
 
         protected NPC npc;

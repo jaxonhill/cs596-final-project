@@ -5,6 +5,9 @@ namespace NPCs.States.Chase
 {
     public class FriendlyChaseState : ChaseState
     {
+        
+        private Vector3 position => npc.transform.position;
+        
         public FriendlyChaseState(NPC new_npc) : base(new_npc)
         {
         }
@@ -18,7 +21,7 @@ namespace NPCs.States.Chase
         
         private bool CheckIfInSight()
         {
-            Physics.Raycast(npc.GetPosition(), target.position, out var hit, npc.GetDetectionRange());
+            Physics.Raycast(position, target.position, out var hit, npc.detection.GetValue());
             return hit.transform && hit.transform.CompareTag("Enemy");
         }
     }

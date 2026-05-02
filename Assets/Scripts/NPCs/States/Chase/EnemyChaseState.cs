@@ -9,6 +9,8 @@ namespace NPCs.States.Chase
 
         private BaseEnemy enemy;
 
+        private Vector3 position => enemy.transform.position;
+        
         public EnemyChaseState(BaseEnemy new_enemy) : base(new_enemy)
         {
             enemy = new_enemy;
@@ -23,7 +25,7 @@ namespace NPCs.States.Chase
         
         private bool CheckIfInSight()
         {
-            Physics.Raycast(npc.GetPosition(), target.position, out var hit, npc.GetDetectionRange());
+            Physics.Raycast(position, target.position, out var hit, npc.detection.GetValue());
             return hit.transform && hit.transform == target;
         }
     }

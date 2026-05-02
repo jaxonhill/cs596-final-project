@@ -25,7 +25,7 @@ namespace NPCs.States
 
         public override void Exit()
         {
-            Destroy(npc);
+            npc.Destroy();
         }
     }
 }

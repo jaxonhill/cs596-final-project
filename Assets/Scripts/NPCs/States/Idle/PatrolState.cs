@@ -48,6 +48,8 @@ namespace NPCs.States.Idle
          * * * * * * * * * * */
         private readonly BaseEnemy enemy;
 
+        private Vector3 position => enemy.transform.position;
+        
         
         public PatrolState(BaseEnemy enemy) {
             this.enemy = enemy;
@@ -60,16 +62,16 @@ namespace NPCs.States.Idle
         public override void Enter()
         {
             patrol_index = 0;
-            enemy.SetTarget(null);;
+            enemy.SetTarget(null);
             SetNewPath();
-            enemy.SetMovementSpeed(10);
+            enemy.movement.SetValue(10);
         }
 
-        public override async UniTask Run()
+        public override UniTask Run()
         {
             FindPrimaryTarget();
-            if (pause_patrol) return;
-            Patrol();
+            if (!pause_patrol) _ = Patrol();
+            return UniTask.CompletedTask;
         }
         
         public override void Exit() { }
@@ -82,10 +84,10 @@ namespace NPCs.States.Idle
         private async UniTask Patrol()
         {
             // If the enemy has not yet reached the target position, move towards it
-            if (!enemy.AtDestination()) { enemy.MoveTowardsDestination(); }
+            if (!enemy.movement.AtDestination()) { enemy.movement.MoveTowardsDestination(); }
             
             // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position
-            else if (!NoPath()){ enemy.SetTargetPos(curPath.Pop()); /* Pop the next target position from the current path */ }
+            else if (!NoPath()){ enemy.movement.SetTarget(curPath.Pop()); /* Pop the next target position from the current path */ }
 
             // If the Stack is empty, make a new path
             else
@@ -111,7 +113,7 @@ namespace NPCs.States.Idle
                 if(patrolType == PatrolType.Ordered)patrol_index = IncrementIndex(patrol_index, patrol_markers); // Increment patrol index, loop back to 0 when list size is reached
             }
             else {  /*? Free Patrol implementation here*/ }
-            enemy.SetTargetPos(curPath.Pop()); // Pop the first target position from the path stack
+            enemy.movement.SetTarget(curPath.Pop()); // Pop the first target position from the path stack
         }
 
         
@@ -131,7 +133,7 @@ namespace NPCs.States.Idle
             float min_distance = int.MaxValue;
             foreach (var t in targets)
             {
-                var dist = Vector3.Distance(enemy.GetPosition(), t.position);
+                var dist = Vector3.Distance(position, t.position);
                 if (!(dist < min_distance)) continue;
                 min_distance = dist;
                 target = t;
@@ -143,10 +145,10 @@ namespace NPCs.States.Idle
         private List<Transform> GetFriendliesInView()
         {
             var friendlies_list = GlobalGameManager.GetFriendlies();
-            var friendlies_in_front = friendlies_list.Where(friendly => enemy.InFront(friendly.position));
+            var friendlies_in_front = friendlies_list.Where(friendly => enemy.movement.InFront(friendly.position));
             var friendlies_in_view = friendlies_in_front.Where(friendly =>
             {
-                Physics.Raycast(enemy.GetPosition(), enemy.GetDirection(friendly.position), out var hit, enemy.GetDetectionRange());
+                Physics.Raycast(position, enemy.movement.GetDirection(friendly.position), out var hit, enemy.detection.GetValue());
                 return hit.transform && (hit.transform.CompareTag("Friendly") || hit.transform.CompareTag("Player"));
             }).ToList();
             return friendlies_in_view;
@@ -167,7 +169,7 @@ namespace NPCs.States.Idle
 
         /// <summary> Method for incrementing an array's index </summary>     <param name="index">Array Index</param>
         /// <param name="enumerable"> The array / list of the index </param>
-        /// <param name="loop"> Whether or not the index should loop back to 0. If not, just return -1</param>
+        /// <param name="loop"> Whether the index should loop back to 0. If not, just return -1</param>
         /// <param name="random"> Whether or not a random index should be chosen, rather than incrementing </param>
         private static int IncrementIndex<T>(int index, IEnumerable<T> enumerable, bool loop = true, bool random = false)
         {

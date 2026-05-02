@@ -20,7 +20,7 @@ namespace NPCs.States
         public override void Enter()
         {
             target = npc.GetTarget();
-            npc.SetMovementSpeed(20);
+            npc.movement.SetValue(20);
         }
 
         public override UniTask Run()
@@ -36,11 +36,11 @@ namespace NPCs.States
 
         public override void Exit() { }
 
-        private void FollowTarget() {  npc.MoveTowardsLocation(target.position); }
+        private void FollowTarget() {  npc.movement.MoveTowardsLocation(target.position); }
 
         private bool CheckIfInRange()
         {
-            return npc.AtLocation(target.position);
+            return npc.movement.AtLocation(target.position);
         }
         
         

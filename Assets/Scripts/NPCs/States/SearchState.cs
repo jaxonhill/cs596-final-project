@@ -25,13 +25,15 @@ namespace NPCs.States
 
         private bool secondSearch = false;
         private bool startSearch = true;
+
+        private Vector3 position => enemy.transform.position;
         
         public SearchState(BaseEnemy new_enemy) { enemy = new_enemy; }
         
         public override async void Enter()
         {
             curPath = AStarSearch.Search(enemy.transform, target.position);
-            enemy.SetTargetPos(curPath.Pop());
+            enemy.movement.SetTarget(curPath.Pop());
             await UniTask.Delay(1500);
             secondTarget = target.position;
         }
@@ -56,10 +58,10 @@ namespace NPCs.States
         private async Task Search()
         {
             // If the enemy has not yet reached the target position, move towards it
-            if (!enemy.AtDestination()) { enemy.MoveTowardsDestination(); }
+            if (!enemy.movement.AtDestination()) { enemy.movement.MoveTowardsDestination(); }
             
             // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position
-            else if (!NoPath()){ enemy.SetTargetPos(curPath.Pop()); /* Pop the next target position from the current path */ }
+            else if (!NoPath()){ enemy.movement.SetTarget(curPath.Pop()); /* Pop the next target position from the current path */ }
             
             // If the Stack is empty, 
             else
@@ -70,7 +72,7 @@ namespace NPCs.States
                     await UniTask.WaitUntil(() => !secondTarget.IsUnityNull());
                     secondSearch = true;
                     curPath = AStarSearch.Search(enemy.transform, secondTarget);
-                    enemy.SetTargetPos(curPath.Pop());
+                    enemy.movement.SetTarget(curPath.Pop());
                     startSearch = true;
                     return;
                 }
@@ -84,8 +86,8 @@ namespace NPCs.States
         
         private bool TargetInView()
         {
-            var target_in_front = enemy.InFront(target.position);
-            Physics.Raycast(enemy.GetPosition(), enemy.GetDirection(target.position), out var hit, enemy.GetDetectionRange());
+            var target_in_front = enemy.movement.InFront(target.position);
+            Physics.Raycast(position, enemy.movement.GetDirection(target.position), out var hit, enemy.detection.GetValue());
             return target_in_front && hit.transform && hit.transform == target;
         }
     }

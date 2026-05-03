@@ -1,33 +1,18 @@
+using System.Collections.Generic;
 using Components;
+using Components.NPC;
 using NPCs.States;
-using static NPCs.States.NPCState;
-using TriInspector;
+using NPCs.States.Attack;
+using NPCs.States.Idle;
 using UnityEngine;
+using static NPCs.States.NPCState;
 
 namespace NPCs
 {
     /// <summary> Abstract Class for creating ally and enemy NPCs </summary>
-    [RequireComponent(typeof(Health)), RequireComponent(typeof(Movement)), RequireComponent(typeof(Detection)), RequireComponent(typeof(Attack))]
+    [RequireComponent(typeof(Health)), RequireComponent(typeof(NPCMovement)), RequireComponent(typeof(Detection)), RequireComponent(typeof(Attack))]
     public abstract class NPC : MonoBehaviour
     {
-        [Title("Player Components")]
-        [Header("Health")]
-        [Tooltip("Component managing entity health")]
-        public Health health => GetComponent<Health>();
-        
-        [Header("Movement")]
-        [Tooltip("Component managing entity movement")]
-        public Movement movement => GetComponent<Movement>();
-
-        [Header("Tracking")]
-        [Tooltip("Component managing entity detection")]
-        public Detection detection => GetComponent<Detection>();
-        
-        [Header("Attack")]
-        [Tooltip("Component managing entity attack information")]
-        public Attack attack => GetComponent<Attack>();
-        
-        
         /* * * * **
          * States *
          * * * * **/
@@ -38,37 +23,49 @@ namespace NPCs
         /// <summary> The state the NPC is in when not pursuing an enemy </summary>
         protected ChaseState chaseState;
         /// <summary> The state the NPC is in when actively attacking an enemy </summary>
-        private AttackState attackState;
+        protected AttackState attackState;
         /// <summary> The state an NPC is in when taking damage </summary>
-        private DamagedState damagedState;
+        protected DamagedState damagedState;
         /// <summary> The state the enemy is in when dieing </summary>
-        private DieState dieState;
+        protected DieState dieState;
         
         
-        /* * * * * * * * 
+        /* * * * * * * *
          * Pathfinding *
          * * * * * * * */
-        /// The current position the NPC will attempt to move to 
-        private Vector3 target_pos;
         /// The current entity the NPC is attacking/chasing
         private Transform target;
+        
+        
+        /* * * * * *
+         * Enemies *
+         * * * * * */
+        /// List of entities this NPC considers to be an enemy
+        private List<Transform> enemies => GlobalGameManager.GetTargets(transform);
 
+        
+        /* * * * * * * * *
+         * NPC Components *
+         * * * * * * * * */
+        
         
         // HEADER: START / UPDATE METHODS
         
         // Set the starting state to "Idle"
         protected void Start()
         {
-            attackState = new AttackState(this);
             damagedState = new DamagedState(this);
             dieState = new DieState(this);
             
             state = idleState;
-            state.Enter(); }
+            state.Enter(); 
+        }
 
         // Run the execution for the current state on every frame update 
         // ReSharper disable once AsyncVoidMethod
+        // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
         protected async void Update() { await state.Run(); }
+        
         
         // HEADER: GETTER / SETTER
         
@@ -76,10 +73,13 @@ namespace NPCs
         
         public void SetTarget(Transform value){ target = value;}
         
+        public List<Transform> GetEnemies(){return enemies;}
+        
         
         // HEADER: STATE METHODS
         // HDESC: Methods handling the state of the NPC
 
+        /// Changes the state of the NPC to the given new state
         public void ChangeToState(NPCStateEnum newState)
         {
             state.Exit();
@@ -94,11 +94,15 @@ namespace NPCs
             };
             state.Enter();
         }
-
-        public void Destroy()
-        {
-            Destroy(gameObject);
-        }
+        
+        
+        public NPCState GetState(){ return state;}
+        
+        
+        // HEADER: DESTROY
+        
+        /// Destroys this NPC, as well as this script
+        public void Destroy() { Destroy(gameObject); }
         
     }
 }

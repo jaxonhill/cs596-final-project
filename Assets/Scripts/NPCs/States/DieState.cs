@@ -5,27 +5,18 @@ namespace NPCs.States
 {
     public class DieState : NPCState
     {
-        
-        /* * * * * * * * * *
-         * NPC Components  *
-         * * * * * * * * * */
-        private readonly NPC npc;
-        
         public DieState(NPC new_npc) { npc = new_npc; }
         
         // ReSharper disable Unity.PerformanceAnalysis
+        // ReSharper disable once AsyncVoidMethod
         public override async void Enter()
         {
             GlobalGameManager.RemoveEnemy(npc.transform);
-            await UniTask.Delay(1000);
-            Exit();
+            await UniTask.Delay(1000); Exit();
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }
 
-        public override void Exit()
-        {
-            npc.Destroy();
-        }
+        public override void Exit() { npc.Destroy(); }
     }
 }

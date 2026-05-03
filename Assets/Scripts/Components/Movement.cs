@@ -3,48 +3,36 @@ using UnityEngine;
 
 namespace Components
 {
-    /// Abstract class for managing the movement of an entity
+    /// Abstract class for managing the movement of an entity (Base Value: Speed)
     [HideMonoScript]
-    public class Movement : Component
+    public class Movement : EntityComponent
     {
+        
+        // HEADER: FIELDS (and inspector modifiers)
+        
         protected override string GetMainValue(){return "Speed";}
         protected override string GetMainTooltip(){return "How fast this entity can move";}
         
-        /* * * * * 
-         * Fields *
-         * * * * */
         private int speed {
             get => val;
             set => val = value; }
-
+        
         private Vector3 position => transform.position;
         
-        /// The forward direction of this NPC
+        /// The forward direction of this entity
         private Vector3 forward => transform.forward;
 
+        /// The rigidbody of this entity
         private Rigidbody rb => transform.GetComponent<Rigidbody>();
+        
+        
+        // HEADER: CONSTRUCTOR
 
-        private Vector3 target_pos;
-
-        
-        /* * * * * * * *
-         * Constructor *
-         * * * * * * * */
-        public Movement(){ speed = 10; }
-        
-        
-        /* * * * * * * * * * *
-         * Getters / Setters *
-         * * * * * * * * * * */
-        
-        public Vector3 GetTarget() {return target_pos; }
-        
-        public void SetTarget(Vector3 value) {target_pos = value;}
+        public Movement() { speed = 10; }
             
         
-        /* * * * * * * * * * 
-         * Speed Modifiers *
-         * * * * * * * * * */
+        // HEADER: EXTRA MODIFIERS
+        
         /// Set speed to 0, stopping the entity
         public void Stop(){speed = 0;}
     
@@ -55,22 +43,17 @@ namespace Components
         public void LowerSpeed(int value){speed -= value;}
         
         
-        /* * * * * * * * *
-         * Position Logic *
-         * * * * * * * * */
-        /// <summary> Returns true if an NPC is within a certain distance from a coordinate </summary>
+        // HEADER: POSITION LOGIC
+        
+        /// Returns true if an NPC is within a certain distance from a coordinate 
         public bool WithinLocation(float distance, Vector3 location) { return Vector3.Distance(position, location) < distance; }
         
-        /// <summary> Returns true if an NPC is within 1 unit from a coordinate </summary>
+        /// Returns true if an NPC is within 1 unit from a coordinate 
         public bool AtLocation(Vector3 location) { return WithinLocation(1, location); }
         
-        /// <summary> Returns true if an NPC is within 1 unit of their given target position </summary>
-        public bool AtDestination(){return AtLocation(target_pos);}
         
+        // HEADER: MOVEMENT LOGIC
         
-        /* * * * * * * * *
-         * Movement Logic *
-         * * * * * * * * */
         /// Move the NPC gradually towards a given location
         public void MoveTowardsLocation(Vector3 location)
         {
@@ -81,13 +64,9 @@ namespace Components
             rb.Move(new_pos, Quaternion.LookRotation(direction));
         }
         
-        /// <summary> Move the NPC gradually towards their target position </summary>
-        public void MoveTowardsDestination() { MoveTowardsLocation(target_pos); }
         
+        // HEADER: DIRECTION LOGIC
         
-        /* * * * * * * * * *
-         * Direction Logic *
-         * * * * * * * * * */
         public Vector3 GetDirection(Vector3 coordinate) { return Vector3.Normalize(coordinate - transform.position); }
 
         /// Return whether the given coordinate is in front of the NPC

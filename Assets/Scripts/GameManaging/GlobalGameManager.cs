@@ -20,4 +20,20 @@ public static class GlobalGameManager
     public static List<Transform> GetFriendlies(){return friendlies;}
     
     public static List<Transform> GetEnemies(){return enemies;}
+
+    public static List<Transform> GetTargets(Transform entity)
+    {
+        if (friendlies.Contains(entity)) return enemies;
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (enemies.Contains(entity)) return friendlies;
+        return null;
+    }
+
+    public static List<string> GetTargetTags(Transform entity)
+    {
+        if (friendlies.Contains(entity)) return new List<string> {"Enemy"} ;
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (enemies.Contains(entity)) return new List<string> {"Player", "Friendly"};
+        return null;
+    }
 }

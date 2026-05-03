@@ -1,18 +1,21 @@
 using TriInspector;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Components
 {
     /// Abstract class for defining components used by the player and NPCs
-    public abstract class Component : MonoBehaviour
+    public abstract class EntityComponent : MonoBehaviour
     {
+        // HEADER: FIELDS (and inspector modifiers)
+        
         protected abstract string GetMainValue(); protected string mainValue => GetMainValue();
         protected abstract string GetMainTooltip(); protected string mainTooltip => GetMainTooltip();
         
         [PropertyTooltip("$mainTooltip"),
          SerializeField, LabelText("$mainValue")] protected int val;
         
+        
+        // HEADER: GETTERS / SETTERS
         
         /// Return the base value of this component
         public int GetValue(){return val;}

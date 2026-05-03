@@ -1,8 +1,9 @@
 using Cysharp.Threading.Tasks;
 
-namespace NPCs.States
+namespace NPCs.States.Idle
 {
-    public class IdleState : NPCState
+    /// Default state for NPCs, when they are not chasing, attacking, etc
+    public abstract class IdleState : NPCState
     {
         public override void Enter() { throw new System.NotImplementedException(); }
 

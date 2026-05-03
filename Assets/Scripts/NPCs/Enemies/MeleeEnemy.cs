@@ -1,3 +1,4 @@
+using NPCs.States.Attack;
 using TriInspector;
 
 namespace NPCs.Enemies
@@ -6,5 +7,9 @@ namespace NPCs.Enemies
     [HideMonoScript]
     public class MeleeEnemy : BaseEnemy
     {
+        public MeleeEnemy()
+        {
+            attackState = new MeleeAttackState(this);
+        }
     }
 }

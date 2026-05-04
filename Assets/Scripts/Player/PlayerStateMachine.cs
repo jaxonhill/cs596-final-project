@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(PlayerAnimator))]
 [RequireComponent(typeof(PlayerCombat))]
+[RequireComponent(typeof(Damageable))]
 public class PlayerStateMachine : MonoBehaviour
 {
     [Header("Required References")]
@@ -11,6 +12,7 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] private PlayerMotor playerMotor;
     [SerializeField] private PlayerAnimator playerAnimator;
     [SerializeField] private PlayerCombat playerCombat;
+    [SerializeField] private Damageable playerDamageable;
 
     private PlayerBaseState currentState;
     private PlayerIdleState idleState;
@@ -24,6 +26,7 @@ public class PlayerStateMachine : MonoBehaviour
     public PlayerMotor PlayerMotor => playerMotor;
     public PlayerAnimator PlayerAnimator => playerAnimator;
     public PlayerCombat PlayerCombat => playerCombat;
+    public Damageable PlayerDamageable => playerDamageable;
 
     public PlayerBaseState CurrentState => currentState;
     public PlayerIdleState IdleState => idleState;
@@ -87,7 +90,8 @@ public class PlayerStateMachine : MonoBehaviour
         return playerInput != null
             && playerMotor != null
             && playerAnimator != null
-            && playerCombat != null;
+            && playerCombat != null
+            && playerDamageable != null;
     }
 
     private void LogRequiredReferences()
@@ -96,6 +100,7 @@ public class PlayerStateMachine : MonoBehaviour
         LogRequiredReference(playerMotor, nameof(playerMotor), typeof(PlayerMotor).Name);
         LogRequiredReference(playerAnimator, nameof(playerAnimator), typeof(PlayerAnimator).Name);
         LogRequiredReference(playerCombat, nameof(playerCombat), typeof(PlayerCombat).Name);
+        LogRequiredReference(playerDamageable, nameof(playerDamageable), typeof(Damageable).Name);
     }
 
     private void LogRequiredReference(Object reference, string fieldName, string componentName)

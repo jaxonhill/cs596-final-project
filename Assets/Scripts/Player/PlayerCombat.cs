@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float swordAttackDuration = 0.50f;
     [SerializeField] private float swordAttackHitboxDelay = 0.25f;
     [SerializeField] private Vector3 swordAttackHitboxLocalOffset = new Vector3(0f, 1f, 1f);
+    [SerializeField] private LayerMask attackTargetLayers;
 
     private GameObject spawnedHitbox;
     private bool hasSwordAttackHitboxSpawned;
@@ -89,5 +90,15 @@ public class PlayerCombat : MonoBehaviour
 
         Vector3 spawnPosition = transform.TransformPoint(swordAttackHitboxLocalOffset);
         spawnedHitbox = Instantiate(swordAttackHitboxPrefab, spawnPosition, transform.rotation);
+
+        AttackHitbox attackHitbox = spawnedHitbox.GetComponent<AttackHitbox>();
+        if (attackHitbox != null)
+        {
+            attackHitbox.Initialize(gameObject, swordAttackDamage, attackTargetLayers);
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerCombat] Spawned sword hitbox is missing AttackHitbox component.", spawnedHitbox);
+        }
     }
 }

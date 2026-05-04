@@ -134,6 +134,13 @@ public class PlayerMotor : MonoBehaviour
 
     private Vector3 GetWorldDirection(Vector2 clampedInput)
     {
-        return (transform.right * clampedInput.x + transform.forward * clampedInput.y).normalized;
+        Vector3 direction = transform.right * clampedInput.x + transform.forward * clampedInput.y;
+
+        if (direction.sqrMagnitude < 0.0001f)
+        {
+            return transform.forward;
+        }
+
+        return direction.normalized;
     }
 }

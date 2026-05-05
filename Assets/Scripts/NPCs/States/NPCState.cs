@@ -1,17 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Components;
+using Components.NPCComponents;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
+using NPCs.States.StateMachines;
 
 namespace NPCs.States
 {
     /// Abstract class for creating the states an NPC can be in
     public abstract class NPCState 
     {
-
-        protected NPC npc;
-
+        /* * * * * * * * *
+         * NPC Components *
+         * * * * * * * * */
+        protected readonly NPC npc;
+        protected NPCStateMachine stateMachine => npc.stateMachine;
+        protected NPCHealth health => npc.health;
+        protected NPCMovement movement => npc.movement;
+        protected Detection detection => npc.detection;
+        protected Attack attack => npc.attack;
+        
+        
         /// Whether some (or all) of Run() execution should be paused 
         protected bool pause;
 
@@ -28,24 +36,36 @@ namespace NPCs.States
             Idle = 0,
             /// Chasing State: State where NPC is pursuing a target
             Chasing = 1,
-            /// Searching State: State where NPC has lost a target, and is looking for them
-            Searching = 2,
             /// Attacking State: NPC is attempting to attack a target
-            Attacking = 3,
+            Attacking = 2,
             /// Damaged State: NPC has been damaged by an enemy
-            Damaged = 4,
+            Damaged = 3,
             /// Death State: NPC health has reached 0, and is dying
-            Death = 5
+            Death = 4,
+            
+            // SUBHEADER Enemy States
+            
+            /// Searching State: State where NPC has lost a target, and is looking for them
+            Searching = 5,
         }
+
+        
+        // HEADER: CONSTRUCTOR
+        
+        protected NPCState(NPC new_npc) { npc = new_npc; }
+        
+        
+        // HEADER: STATE MANAGEMENT
         
         /// Functionality to execute when entering this state
-        public abstract void Enter();
+        public abstract UniTask Enter();
         /// Functionality to run while in this state
         public abstract UniTask Run();
         /// Functionality to run when leaving this state
-        public abstract void Exit();
+        public abstract UniTask Exit();
         
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public virtual async UniTask InvokeWithPause(Action func, int delay)
         {
             pause = true;

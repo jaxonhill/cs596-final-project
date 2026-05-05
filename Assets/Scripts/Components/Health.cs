@@ -1,3 +1,4 @@
+using NPCs;
 using NPCs.States;
 using TriInspector;
 using UnityEngine;
@@ -25,14 +26,10 @@ namespace Components
 
         /// Whether this entity is currently invincible
         private bool isInvincible;
-
-        private NPCs.NPC npc;
         
         // HEADER: CONSTRUCTOR
         
         public Health() { health = maxHealth; }
-
-        public void Start() { npc = transform.GetComponent<NPCs.NPC>(); }
         
         // HEADER: GETTERS / SETTERS
         
@@ -63,10 +60,9 @@ namespace Components
             health -= value;
         }
 
-        public void OnDamaged(int value, bool ignoreIFrames = false)
+        public virtual void OnDamaged(int value, bool ignoreIFrames = false)
         {
             LowerHealth(value);
-            npc.ChangeToState(NPCState.NPCStateEnum.Damaged);
             if (!ignoreIFrames) return; 
             isInvincible = true;
             Invoke(nameof(SetInvincible), iFrames);

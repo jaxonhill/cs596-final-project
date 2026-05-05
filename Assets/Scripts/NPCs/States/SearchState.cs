@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Components.NPC;
+using Components;
+using Components.NPCComponents;
 using Cysharp.Threading.Tasks;
 using NPCs.Enemies;
 using Unity.VisualScripting;
@@ -17,17 +18,12 @@ namespace NPCs.States
         private readonly BaseEnemy enemy;
 
         private Vector3 position => enemy.transform.position;
-        /// Component that controls movement: <see cref="NPCMovement">NPCMovement</see>
-        private NPCMovement movement;
-        /// Component that controls how NPCs detect enemies: <see cref="Detection">NPCMovement</see>
-        private Detection detection;
-        
         
         /* * * * * * * * * * *
          * Search Components *
          * * * * * * * * * * */
         /// The entity this enemy is searching for 
-        private Transform target => enemy.GetTarget();
+        private Transform target => enemy.Target;
         /// The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)
         private Stack<Vector3> curPath;
         /// The second location to search for a lost target 
@@ -39,8 +35,8 @@ namespace NPCs.States
         
         
         // HEADER: CONSTRUCTOR
-        
-        public SearchState(BaseEnemy new_enemy)
+
+        public SearchState(BaseEnemy new_enemy) : base(new_enemy)
         {
             enemy = new_enemy;
         }
@@ -50,11 +46,9 @@ namespace NPCs.States
         
         // ReSharper disable Unity.PerformanceAnalysis
         // ReSharper disable once AsyncVoidMethod
-        public override async void Enter()
+        public override async UniTask Enter()
         {
             curPath = null;
-            movement = enemy.GetComponent<NPCMovement>();
-            detection = enemy.GetComponent<Detection>();
 
             pause = true;
             while (curPath.IsUnityNull())
@@ -66,7 +60,7 @@ namespace NPCs.States
             // Create a path to the last known location of the target
             
             // Start moving the enemy through the path
-            movement.SetDestination(curPath.Pop());
+            if (curPath != null) movement.SetDestination(curPath.Pop());
             // After a delay, mark the second location
             await UniTask.Delay(searchDelay);
             secondDestination = target.position;
@@ -75,14 +69,14 @@ namespace NPCs.States
         public override async UniTask Run()
         {
             // If the enemy is found, return to a Chase State
-            if (TargetInView()) { enemy.ChangeToState(NPCStateEnum.Chasing); }
+            if (TargetInView()) { await stateMachine.ChangeToState(NPCStateEnum.Chasing); }
             
             // If Searh execution is paused, return, otherwise do Search for Target
             if (pause) return;
             await Search();
         }
 
-        public override void Exit() {}
+        public override UniTask Exit() {return UniTask.CompletedTask;}
         
         
         // HEADER: SEARCH METHODS
@@ -108,8 +102,9 @@ namespace NPCs.States
                     }, () => !secondDestination.IsUnityNull());
                     return;
                 }
+                enemy.SetAnimationTrigger("Idle");
                 await UniTask.Delay(searchDelay); // Once both search locations have been checked, and target is not found, return to Idle State
-                enemy.ChangeToState(NPCStateEnum.Idle);
+                await stateMachine.ChangeToState(NPCStateEnum.Idle);
             }
         }
         
@@ -117,7 +112,7 @@ namespace NPCs.States
         private bool TargetInView()
         {
             var target_in_front = movement.InFront(target.position); 
-            var target_in_sight = PhyTools.RaycastForTransform(position, movement.GetDirection(target.position),detection.GetValue(), 
+            var target_in_sight = PhyTools.RaycastForTransform(position, movement.GetDirection(target.position),detection.GetActiveValue(), 
                                                                                                                 target, Color.red );
             return target_in_front && target_in_sight;
         }

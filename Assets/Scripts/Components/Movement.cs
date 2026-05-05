@@ -16,6 +16,9 @@ namespace Components
         private int speed {
             get => val;
             set => val = value; }
+
+        private int defaultSpeed;
+        public int DefaultSpeed => defaultSpeed;
         
         private Vector3 position => transform.position;
         
@@ -28,7 +31,7 @@ namespace Components
         
         // HEADER: CONSTRUCTOR
 
-        public Movement() { speed = 10; }
+        public void Awake() { defaultSpeed = val; }
             
         
         // HEADER: EXTRA MODIFIERS
@@ -36,7 +39,7 @@ namespace Components
         /// Set speed to 0, stopping the entity
         public void Stop(){speed = 0;}
     
-        /// Raise the speed by the given valeu
+        /// Raise the speed by the given value
         public void RaiseSpeed(int value){speed += value;}
     
         /// Lower the speed by the given value
@@ -61,7 +64,8 @@ namespace Components
             var new_pos = Vector3.MoveTowards(position, location, speed * Time.deltaTime);
             // Conversely, turn instantly towards the direction of movement
             var direction = Vector3.Normalize(new_pos - position);
-            rb.Move(new_pos, Quaternion.LookRotation(direction));
+            var lookDir = direction == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(direction);
+            rb.Move(new_pos, lookDir);
         }
         
         

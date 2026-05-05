@@ -1,5 +1,5 @@
-using NPCs.States.Attack;
 using TriInspector;
+using UnityEngine;
 
 namespace NPCs.Enemies
 {
@@ -7,9 +7,8 @@ namespace NPCs.Enemies
     [HideMonoScript]
     public class MeleeEnemy : BaseEnemy
     {
-        public MeleeEnemy()
-        {
-            attackState = new MeleeAttackState(this);
-        }
+        private static readonly int Chase = Animator.StringToHash("Chase");
+
+        public MeleeEnemy() {  }
     }
 }

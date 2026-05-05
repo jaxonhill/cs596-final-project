@@ -17,16 +17,16 @@ namespace Components
             set => val = value; }
         
         [Tooltip("The distance the attack can reach"), SerializeField] 
-        private int range = 3;
+        private int range = 1;
 
         [Tooltip("Time in frames that passes before entity attacks (Animation may occur during this period)"), SerializeField] 
-        private int windup = 1000;
+        private int windup = 500;
 
         [Tooltip("Time in frames that the attack will last"), SerializeField] 
         private int length = 500;
         
         [Tooltip("Time in frames that passes before entity can attack again (Animation may occur during this period)"), SerializeField] 
-        private int cooldown = 1000;
+        private int cooldown = 500;
         
         
         // HEADER: CONSTRUCTOR

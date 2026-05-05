@@ -1,34 +1,36 @@
 using System.Collections.Generic;
 using Components;
-using Components.NPC;
+using Components.NPCComponents;
+using Cysharp.Threading.Tasks;
 using NPCs.States;
-using NPCs.States.Attack;
-using NPCs.States.Idle;
+using NPCs.States.AttackStates;
+using NPCs.States.ChaseStates;
+using NPCs.States.IdleStates;
+using NPCs.States.StateMachines;
 using UnityEngine;
 using static NPCs.States.NPCState;
 
 namespace NPCs
 {
     /// <summary> Abstract Class for creating ally and enemy NPCs </summary>
-    [RequireComponent(typeof(Health)), RequireComponent(typeof(NPCMovement)), RequireComponent(typeof(Detection)), RequireComponent(typeof(Attack))]
+     [RequireComponent(typeof(NPCHealth)), 
+     RequireComponent(typeof(NPCMovement)), 
+     RequireComponent(typeof(Detection)), 
+     RequireComponent(typeof(Attack))]
     public abstract class NPC : MonoBehaviour
     {
-        /* * * * **
-         * States *
-         * * * * **/
-        /// <summary> The current state of the NPC </summary>
-        protected NPCState state;
-        /// <summary> The state an NPC is in when not attacking/chasing/etc </summary>
-        protected IdleState idleState;
-        /// <summary> The state the NPC is in when not pursuing an enemy </summary>
-        protected ChaseState chaseState;
-        /// <summary> The state the NPC is in when actively attacking an enemy </summary>
-        protected AttackState attackState;
-        /// <summary> The state an NPC is in when taking damage </summary>
-        protected DamagedState damagedState;
-        /// <summary> The state the enemy is in when dieing </summary>
-        protected DieState dieState;
+
+        public NPCStateMachine stateMachine { get; private set; }
+        public NPCHealth health { get; private set; }
+        public NPCMovement movement { get; private set; }
+        public Detection detection { get; private set; }
+        public Attack attack { get; private set; }
+
+        /* * * * * * *
+         * Animation *
+         * * * * * * */
         
+        protected Animator anim;
         
         /* * * * * * * *
          * Pathfinding *
@@ -43,61 +45,56 @@ namespace NPCs
         /// List of entities this NPC considers to be an enemy
         private List<Transform> enemies => GlobalGameManager.GetTargets(transform);
 
-        
-        /* * * * * * * * *
-         * NPC Components *
-         * * * * * * * * */
-        
-        
-        // HEADER: START / UPDATE METHODS
-        
-        // Set the starting state to "Idle"
-        protected void Start()
+        protected void Awake()
         {
-            damagedState = new DamagedState(this);
-            dieState = new DieState(this);
+            anim = GetComponent<Animator>();
             
-            state = idleState;
-            state.Enter(); 
+            stateMachine = GetComponent<NPCStateMachine>();
+            health = GetComponent<NPCHealth>();
+            movement = GetComponent<NPCMovement>();
+            detection = GetComponent<Detection>();
+            attack = GetComponent<Attack>();
         }
-
-        // Run the execution for the current state on every frame update 
-        // ReSharper disable once AsyncVoidMethod
-        // ReSharper disable once Unity.PerformanceCriticalCodeInvocation
-        protected async void Update() { await state.Run(); }
         
         
         // HEADER: GETTER / SETTER
-        
-        public Transform GetTarget(){ return target;}
+
+        public Transform Target => target;
         
         public void SetTarget(Transform value){ target = value;}
-        
-        public List<Transform> GetEnemies(){return enemies;}
-        
-        
-        // HEADER: STATE METHODS
-        // HDESC: Methods handling the state of the NPC
 
-        /// Changes the state of the NPC to the given new state
-        public void ChangeToState(NPCStateEnum newState)
+        public List<Transform> Enemies => enemies;
+
+        public Animator Animator => anim;
+        
+
+        // HEADER: ANIMATION
+
+        private bool animationRunning;
+        
+        public async UniTask SetAnimationInt(string id, int value, bool awaitFinish = false)
         {
-            state.Exit();
-            state = newState switch
-            {
-                NPCStateEnum.Idle => idleState,
-                NPCStateEnum.Chasing => chaseState,
-                NPCStateEnum.Attacking => attackState,
-                NPCStateEnum.Damaged => damagedState,
-                NPCStateEnum.Death => dieState,
-                _ => state
-            };
-            state.Enter();
+            if (!anim) return;
+            anim.SetInteger(Animator.StringToHash(id), value);
+            if (!awaitFinish) return;
+            await UniTask.WaitUntil(() => animationRunning);
+            await UniTask.WaitUntil(() => !animationRunning);
         }
-        
-        
-        public NPCState GetState(){ return state;}
-        
+
+        public async UniTask SetAnimationTrigger(string id, bool awaitFinish = false)
+        {
+            if (!anim) return;
+            anim.SetTrigger(Animator.StringToHash(id));
+            if (!awaitFinish) return;
+            await UniTask.WaitUntil(() => animationRunning);
+            await UniTask.WaitUntil(() => !animationRunning);
+        }
+
+        public void SetAnimationRunning(bool value, AnimationScript.AnimationStateEnum state)
+        {
+            animationRunning = value;
+        }
+            
         
         // HEADER: DESTROY
         

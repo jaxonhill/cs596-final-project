@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using NPCs.States;
-using NPCs.States.Attack;
-using NPCs.States.Chase;
-using NPCs.States.Idle;
+using NPCs.States.IdleStates;
+using NPCs.States.StateMachines;
 using TriInspector;
 using UnityEngine;
 using static NPCs.States.NPCState;
@@ -11,10 +11,12 @@ using static NPCs.States.NPCState;
 namespace NPCs.Enemies 
 {
     /// <summary> The abstract class for defining enemies </summary>
+    [RequireComponent(typeof(EnemyStateMachine))]
     public abstract class BaseEnemy : NPC
     {
-        /// <summary> The state the enemy enters after their chasing state when they've lost their target </summary>
-        private SearchState searchState;
+        /* * * * * * * *
+         * Patrolling *
+         * * * * * * * */
         
         // Method specifically used for the Dropdown attribute of patrolType (Creates dropdown list functionality in the inspector)
         private IEnumerable<TriDropdownItem<int>> GetPatrolTypeEnum()
@@ -25,47 +27,42 @@ namespace NPCs.Enemies
                 {"Free", 2}, };
         }
         
-        /* * * * * * * *
-         * Patrolling *
-         * * * * * * * */
         [Title("Patrolling")] 
+        
         [Tooltip("The patrolling type the enemy uses: Ordered, Random, or Free"), Dropdown(nameof(GetPatrolTypeEnum)), SerializeField]
         private int patrolType;
+        
         [Tooltip("List of transforms representing the positions that enemies will move to when not chasing the player"), SerializeField] 
-        private List<Transform> patrol_markers;
+        private List<Transform> patrolMarkers;
+        
         [Tooltip("How long an enemy should remain at a patrol marker before proceeding to the next"), SerializeField]
-        private int patrol_delay;
+        private int patrolDelay;
+        
+        
+        [Title("Searching")] 
+        
+        [Tooltip("Whether the enemy will search for a lost player (Melee), or return to idle (Range)"), SerializeField] 
+        protected bool willSearch;
         
         
         // HEADER: STANDARD METHODS
+
+        protected BaseEnemy()
+        { }
         
         // Initialize the IdleState as PatrolState, and the ChaseState as EnemyChaseState, as well as the enemy exclusive SearchState
         // Add this enemy to the GlobalGameManager
-        protected new void Start() {
-            idleState = new PatrolState(this);
-            chaseState = new EnemyChaseState(this);
-            searchState = new(this);
-            
-            GlobalGameManager.AddEnemy(transform);
-            base.Start(); }
-        
-        
-        // HEADER: STATE METHODS
-        
-        /// Override of <see cref="NPC.ChangeToState">NPC.ChangeToState()</see> that includes SearchState as a state
-        public new void ChangeToState(NPCStateEnum newState)
-        {
-            if (newState == NPCStateEnum.Searching) { state.Exit(); state = searchState; state.Enter(); }
-            else { base.ChangeToState(newState); } // If not search state, do normal NPC.ChangeToState()
-        }
-        
-        
+        protected void Start() { GlobalGameManager.AddEnemy(transform); }
+
+
         // HEADER: GETTERS
         
         public int GetPatrolType(){ return patrolType;}
         
-        public List<Transform> GetPatrolMarkers(){ return patrol_markers;}
+        public List<Transform> GetPatrolMarkers(){ return patrolMarkers;}
         
-        public int GetPatrolDelay(){return patrol_delay;}
+        public int GetPatrolDelay(){return patrolDelay;}
+        
+        public bool GetWillSearch(){return willSearch;}
     }
 }

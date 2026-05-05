@@ -1,3 +1,5 @@
+using System;
+using NPCs;
 using TriInspector;
 using UnityEngine;
 
@@ -14,7 +16,7 @@ namespace Components
         [PropertyTooltip("$mainTooltip"),
          SerializeField, LabelText("$mainValue")] protected int val;
         
-        
+
         // HEADER: GETTERS / SETTERS
         
         /// Return the base value of this component

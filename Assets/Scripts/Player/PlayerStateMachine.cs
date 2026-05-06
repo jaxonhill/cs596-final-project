@@ -4,57 +4,46 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(PlayerAnimator))]
 [RequireComponent(typeof(PlayerCombat))]
+[RequireComponent(typeof(Damageable))]
 public class PlayerStateMachine : MonoBehaviour
 {
     [Header("Required References")]
-    [SerializeField] private PlayerInputReader playerInput;
-    [SerializeField] private PlayerMotor playerMotor;
-    [SerializeField] private PlayerAnimator playerAnimator;
-    [SerializeField] private PlayerCombat playerCombat;
+    [field: SerializeField] public PlayerInputReader PlayerInput { get; private set; }
+    [field: SerializeField] public PlayerMotor PlayerMotor { get; private set; }
+    [field: SerializeField] public PlayerAnimator PlayerAnimator { get; private set; }
+    [field: SerializeField] public PlayerCombat PlayerCombat { get; private set; }
+    [field: SerializeField] public Damageable PlayerDamageable { get; private set; }
 
-    private PlayerBaseState currentState;
-    private PlayerIdleState idleState;
-    private PlayerMoveState moveState;
-    private PlayerJumpState jumpState;
-    private PlayerFallState fallState;
-    private PlayerRollState rollState;
-    private PlayerSwordAttackState swordAttackState;
-
-    public PlayerInputReader PlayerInput => playerInput;
-    public PlayerMotor PlayerMotor => playerMotor;
-    public PlayerAnimator PlayerAnimator => playerAnimator;
-    public PlayerCombat PlayerCombat => playerCombat;
-
-    public PlayerBaseState CurrentState => currentState;
-    public PlayerIdleState IdleState => idleState;
-    public PlayerMoveState MoveState => moveState;
-    public PlayerJumpState JumpState => jumpState;
-    public PlayerFallState FallState => fallState;
-    public PlayerRollState RollState => rollState;
-    public PlayerSwordAttackState SwordAttackState => swordAttackState;
+    public PlayerBaseState CurrentState { get; private set; }
+    public PlayerIdleState IdleState { get; private set; }
+    public PlayerMoveState MoveState { get; private set; }
+    public PlayerJumpState JumpState { get; private set; }
+    public PlayerFallState FallState { get; private set; }
+    public PlayerRollState RollState { get; private set; }
+    public PlayerSwordAttackState SwordAttackState { get; private set; }
 
     public void SwitchState(PlayerBaseState newState)
     {
-        if (newState == null || newState == currentState)
+        if (newState == null || newState == CurrentState)
         {
             return;
         }
 
-        currentState?.ExitState();
-        currentState = newState;
-        currentState.EnterState();
+        CurrentState?.ExitState();
+        CurrentState = newState;
+        CurrentState.EnterState();
     }
 
     private void Awake()
     {
         LogRequiredReferences();
 
-        idleState = new PlayerIdleState(this);
-        moveState = new PlayerMoveState(this);
-        jumpState = new PlayerJumpState(this);
-        fallState = new PlayerFallState(this);
-        rollState = new PlayerRollState(this);
-        swordAttackState = new PlayerSwordAttackState(this);
+        IdleState = new PlayerIdleState(this);
+        MoveState = new PlayerMoveState(this);
+        JumpState = new PlayerJumpState(this);
+        FallState = new PlayerFallState(this);
+        RollState = new PlayerRollState(this);
+        SwordAttackState = new PlayerSwordAttackState(this);
     }
 
     private void Start()
@@ -66,36 +55,38 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
-        SwitchState(idleState);
+        SwitchState(IdleState);
     }
 
     private void Update()
     {
         PlayerInput.ReadInput();
 
-        if (currentState != rollState)
+        if (CurrentState != RollState)
         {
             PlayerMotor.Turn(PlayerInput.TurnInput);
         }
 
-        currentState.UpdateState();
-        currentState.CheckSwitchStates();
+        CurrentState.UpdateState();
+        CurrentState.CheckSwitchStates();
     }
 
     private bool HasRequiredReferences()
     {
-        return playerInput != null
-            && playerMotor != null
-            && playerAnimator != null
-            && playerCombat != null;
+        return PlayerInput != null
+            && PlayerMotor != null
+            && PlayerAnimator != null
+            && PlayerCombat != null
+            && PlayerDamageable != null;
     }
 
     private void LogRequiredReferences()
     {
-        LogRequiredReference(playerInput, nameof(playerInput), typeof(PlayerInputReader).Name);
-        LogRequiredReference(playerMotor, nameof(playerMotor), typeof(PlayerMotor).Name);
-        LogRequiredReference(playerAnimator, nameof(playerAnimator), typeof(PlayerAnimator).Name);
-        LogRequiredReference(playerCombat, nameof(playerCombat), typeof(PlayerCombat).Name);
+        LogRequiredReference(PlayerInput, nameof(PlayerInput), typeof(PlayerInputReader).Name);
+        LogRequiredReference(PlayerMotor, nameof(PlayerMotor), typeof(PlayerMotor).Name);
+        LogRequiredReference(PlayerAnimator, nameof(PlayerAnimator), typeof(PlayerAnimator).Name);
+        LogRequiredReference(PlayerCombat, nameof(PlayerCombat), typeof(PlayerCombat).Name);
+        LogRequiredReference(PlayerDamageable, nameof(PlayerDamageable), typeof(Damageable).Name);
     }
 
     private void LogRequiredReference(Object reference, string fieldName, string componentName)

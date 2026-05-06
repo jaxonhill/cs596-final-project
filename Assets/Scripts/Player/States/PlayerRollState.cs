@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class PlayerRollState : PlayerBaseState
 {
     public PlayerRollState(PlayerStateMachine currentContext) : base(currentContext)
@@ -9,6 +11,12 @@ public class PlayerRollState : PlayerBaseState
         PlayerAnimation rollAnimation = player.PlayerMotor.GetClosestRollAnimation(player.PlayerInput.MoveInput);
         player.PlayerMotor.BeginRoll(player.PlayerInput.MoveInput);
         player.PlayerAnimator.Play(rollAnimation);
+
+        if (player.PlayerDamageable != null)
+        {
+            player.PlayerDamageable.SetStateInvincible(true);
+            Debug.Log("[State] ROLL started — invincibility ON", player);
+        }
     }
 
     public override void UpdateState()
@@ -18,6 +26,11 @@ public class PlayerRollState : PlayerBaseState
 
     public override void ExitState()
     {
+        if (player.PlayerDamageable != null)
+        {
+            player.PlayerDamageable.SetStateInvincible(false);
+            Debug.Log("[State] ROLL ended — invincibility OFF", player);
+        }
     }
 
     public override void CheckSwitchStates()

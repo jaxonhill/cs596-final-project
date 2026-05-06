@@ -12,19 +12,18 @@ public class PlayerInputReader : MonoBehaviour
     [SerializeField] private RectTransform cameraLookArea;
     [SerializeField] private float lookSensitivity = 0.05f;
 
-    [Header("Input Filtering")]
-    [SerializeField] private float movementInputThreshold = 0.001f;
-
-    private float movementThresholdSqr;
+    // Button Input Queue
     private bool queuedJumpInput;
     private bool queuedRollInput;
     private bool queuedSwordAttackInput;
     private bool queuedFireAttackInput;
 
+    // Joystick Pointer Tracking
     private bool isMovementJoystickPressed;
     private int activeMovementPointerId;
     private Vector2 movementJoystickNubStartPosition;
 
+    // === Camera Pointer Tracking ===
     private bool isCameraLookPressed;
     private int activeCameraLookPointerId;
     private Vector2 queuedLookDelta;
@@ -35,35 +34,18 @@ public class PlayerInputReader : MonoBehaviour
     public bool IsRollPressed { get; private set; }
     public bool IsSwordAttackPressed { get; private set; }
     public bool IsFireAttackPressed { get; private set; }
-    public bool IsTryingToMove => MoveInput.sqrMagnitude > movementThresholdSqr;
+    public bool IsTryingToMove => MoveInput.sqrMagnitude > 0f;
 
     private void Awake()
     {
         activeMovementPointerId = int.MinValue;
         activeCameraLookPointerId = int.MinValue;
-        movementThresholdSqr = movementInputThreshold * movementInputThreshold;
-
         if (movementJoystickNub != null)
         {
             movementJoystickNubStartPosition = movementJoystickNub.anchoredPosition;
         }
 
         LogConfiguredReferences();
-    }
-
-    private void OnDisable()
-    {
-        ResetMovementJoystick();
-        ResetCameraLook();
-        queuedJumpInput = false;
-        queuedRollInput = false;
-        queuedSwordAttackInput = false;
-        queuedFireAttackInput = false;
-        IsJumpPressed = false;
-        IsRollPressed = false;
-        IsSwordAttackPressed = false;
-        IsFireAttackPressed = false;
-        TurnInput = 0f;
     }
 
     public void ReadInput()
@@ -82,12 +64,12 @@ public class PlayerInputReader : MonoBehaviour
         queuedLookDelta = Vector2.zero;
     }
 
+    // ### JOYSTICK ### 
+
     public void OnMovementJoystickPointerDown(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData))
-        {
-            return;
-        }
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null) { return; } 
 
         if (isMovementJoystickPressed && activeMovementPointerId != pointerEventData.pointerId)
         {
@@ -101,7 +83,8 @@ public class PlayerInputReader : MonoBehaviour
 
     public void OnMovementJoystickDrag(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData) || !IsActiveMovementPointer(pointerEventData))
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null || !IsActiveMovementPointer(pointerEventData))
         {
             return;
         }
@@ -111,7 +94,8 @@ public class PlayerInputReader : MonoBehaviour
 
     public void OnMovementJoystickPointerUp(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData) || !IsActiveMovementPointer(pointerEventData))
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null || !IsActiveMovementPointer(pointerEventData))
         {
             return;
         }
@@ -119,9 +103,12 @@ public class PlayerInputReader : MonoBehaviour
         ResetMovementJoystick();
     }
 
+    // ### CAMERA ### 
+
     public void OnCameraLookPointerDown(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData))
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null)
         {
             return;
         }
@@ -137,7 +124,8 @@ public class PlayerInputReader : MonoBehaviour
 
     public void OnCameraLookDrag(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData) || !IsActiveCameraLookPointer(pointerEventData))
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null || !IsActiveCameraLookPointer(pointerEventData))
         {
             return;
         }
@@ -147,7 +135,8 @@ public class PlayerInputReader : MonoBehaviour
 
     public void OnCameraLookPointerUp(BaseEventData eventData)
     {
-        if (!TryGetPointerEventData(eventData, out PointerEventData pointerEventData) || !IsActiveCameraLookPointer(pointerEventData))
+        PointerEventData pointerEventData = ConvertEventDataToPointerData(eventData);
+        if (pointerEventData == null || !IsActiveCameraLookPointer(pointerEventData))
         {
             return;
         }
@@ -155,50 +144,33 @@ public class PlayerInputReader : MonoBehaviour
         ResetCameraLook();
     }
 
-    public void OnJumpButtonPointerDown(BaseEventData eventData)
-    {
-        QueueJumpInput();
-    }
-
-    public void OnRollButtonPointerDown(BaseEventData eventData)
-    {
-        QueueRollInput();
-    }
-
-    public void OnSwordAttackButtonPointerDown(BaseEventData eventData)
-    {
-        QueueSwordAttackInput();
-    }
-
-    public void OnFireAttackButtonPointerDown(BaseEventData eventData)
-    {
-        QueueFireAttackInput();
-    }
+    // ### BUTTONS ###
 
     public void OnJumpButtonPressed()
     {
-        QueueJumpInput();
+        queuedJumpInput = true;
     }
 
     public void OnRollButtonPressed()
     {
-        QueueRollInput();
+        queuedRollInput = true;
     }
 
     public void OnSwordAttackButtonPressed()
     {
-        QueueSwordAttackInput();
+        queuedSwordAttackInput = true;
     }
 
     public void OnFireAttackButtonPressed()
     {
-        QueueFireAttackInput();
+        queuedFireAttackInput = true;
     }
+
+    // ### MOVEMENT HELPERS ### 
 
     public void SetMoveInput(Vector2 moveInput)
     {
-        Vector2 clampedInput = Vector2.ClampMagnitude(moveInput, 1f);
-        MoveInput = clampedInput.sqrMagnitude > movementThresholdSqr ? clampedInput : Vector2.zero;
+        MoveInput = Vector2.ClampMagnitude(moveInput, 1f);
     }
 
     public void ClearMoveInput()
@@ -206,25 +178,7 @@ public class PlayerInputReader : MonoBehaviour
         MoveInput = Vector2.zero;
     }
 
-    public void QueueJumpInput()
-    {
-        queuedJumpInput = true;
-    }
-
-    public void QueueRollInput()
-    {
-        queuedRollInput = true;
-    }
-
-    public void QueueSwordAttackInput()
-    {
-        queuedSwordAttackInput = true;
-    }
-
-    public void QueueFireAttackInput()
-    {
-        queuedFireAttackInput = true;
-    }
+    // ### JOYSTICK HELPERS ###
 
     private void UpdateMovementJoystick(PointerEventData pointerEventData)
     {
@@ -263,13 +217,6 @@ public class PlayerInputReader : MonoBehaviour
         }
     }
 
-    private void ResetCameraLook()
-    {
-        isCameraLookPressed = false;
-        activeCameraLookPointerId = int.MinValue;
-        queuedLookDelta = Vector2.zero;
-    }
-
     private float GetMovementJoystickRadius()
     {
         if (movementJoystickRadius > 0f)
@@ -286,6 +233,17 @@ public class PlayerInputReader : MonoBehaviour
         return Mathf.Max(calculatedRadius, 1f);
     }
 
+    // ### CAMERA HELPERS ###
+
+    private void ResetCameraLook()
+    {
+        isCameraLookPressed = false;
+        activeCameraLookPointerId = int.MinValue;
+        queuedLookDelta = Vector2.zero;
+    }
+
+    // ### GENERAL HELPERS ### 
+
     private bool IsActiveMovementPointer(PointerEventData pointerEventData)
     {
         return isMovementJoystickPressed && pointerEventData.pointerId == activeMovementPointerId;
@@ -296,17 +254,17 @@ public class PlayerInputReader : MonoBehaviour
         return isCameraLookPressed && pointerEventData.pointerId == activeCameraLookPointerId;
     }
 
-    private bool TryGetPointerEventData(BaseEventData eventData, out PointerEventData pointerEventData)
+    private PointerEventData ConvertEventDataToPointerData(BaseEventData eventData)
     {
-        pointerEventData = eventData as PointerEventData;
+        PointerEventData pointerEventData = eventData as PointerEventData;
 
         if (pointerEventData == null)
         {
             Debug.LogError($"PlayerInputReader expected PointerEventData but received {eventData?.GetType().Name ?? "null"} on {name}.", this);
-            return false;
+            return null;
         }
 
-        return true;
+        return pointerEventData;
     }
 
     private void LogConfiguredReferences()

@@ -6,6 +6,7 @@ public class PlayerSwordAttackState : PlayerBaseState
 
     public override void EnterState()
     {
+        player.PlayerMotor.StopHorizontalMovement();
         player.PlayerCombat.BeginSwordAttack();
         player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
     }

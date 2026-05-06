@@ -5,11 +5,6 @@ namespace NPCs.States
     public class DamagedState : NPCState
     {
         
-        /* * * * * * * * * *
-         * NPC Components  *
-         * * * * * * * * * */
-        private readonly NPC npc;
-        
         public DamagedState(NPC new_npc) { npc = new_npc; }
 
         // ReSharper disable Unity.PerformanceAnalysis

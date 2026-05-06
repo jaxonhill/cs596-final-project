@@ -5,9 +5,6 @@ namespace NPCs.States
 {
     public class AttackState : NPCState
     {
-        
-        private NPC npc;
-
         public AttackState(NPC this_npc)
         {
             npc = this_npc;

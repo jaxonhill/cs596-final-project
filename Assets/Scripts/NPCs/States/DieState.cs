@@ -6,11 +6,6 @@ namespace NPCs.States
     public class DieState : NPCState
     {
         
-        /* * * * * * * * * *
-         * NPC Components  *
-         * * * * * * * * * */
-        private readonly NPC npc;
-        
         public DieState(NPC new_npc) { npc = new_npc; }
         
         // ReSharper disable Unity.PerformanceAnalysis

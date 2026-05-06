@@ -969,6 +969,13 @@ MonoBehaviour:
   followDistance: 4
   heightOffset: 2
   tiltDown: 20
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 151
+  collisionRadius: 0.3
+  collisionBuffer: 0.2
+  minDistance: 1.2
+  focusHeight: 1.2
 --- !u!1 &1422749458879415066
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,6 +2755,7 @@ GameObject:
   - component: {fileID: 637129502708852545}
   - component: {fileID: 5140074076762071764}
   - component: {fileID: 879509138077680078}
+  - component: {fileID: 5962688980122943577}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -2898,6 +2906,9 @@ MonoBehaviour:
   swordAttackDuration: 0.5
   swordAttackHitboxDelay: 0.25
   swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
+  attackTargetLayers:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &879509138077680078
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2914,6 +2925,21 @@ MonoBehaviour:
   playerMotor: {fileID: 6072224962607933027}
   playerAnimator: {fileID: 637129502708852545}
   playerCombat: {fileID: 5140074076762071764}
+  playerDamageable: {fileID: 5962688980122943577}
+--- !u!114 &5962688980122943577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5659858358309504054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd2a559dd7f44488dab166abb4abe893, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Damageable
+  maxHealth: 10
+  damageInvincibilityDuration: 0.5
 --- !u!1 &5710332999393756249
 GameObject:
   m_ObjectHideFlags: 0

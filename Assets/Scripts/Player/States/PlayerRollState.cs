@@ -46,6 +46,6 @@ public class PlayerRollState : PlayerBaseState
             return;
         }
 
-        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        player.SwitchState(player.MoveState);
     }
 }

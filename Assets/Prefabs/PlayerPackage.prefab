@@ -2743,11 +2743,12 @@ GameObject:
   - component: {fileID: 110115793399377993}
   - component: {fileID: 744241850975410649}
   - component: {fileID: 742136009691371900}
+  - component: {fileID: 879509138077680078}
   - component: {fileID: 8858804014626686278}
   - component: {fileID: 6072224962607933027}
   - component: {fileID: 637129502708852545}
   - component: {fileID: 5140074076762071764}
-  - component: {fileID: 879509138077680078}
+  - component: {fileID: 5962688980122943577}
   m_Layer: 6
   m_Name: PlayerCharacter
   m_TagString: Player
@@ -2827,6 +2828,23 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.6, z: 0}
+--- !u!114 &879509138077680078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5659858358309504054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4c6feac081437ea4f8382939144aaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
+  <PlayerInput>k__BackingField: {fileID: 8858804014626686278}
+  <PlayerMotor>k__BackingField: {fileID: 6072224962607933027}
+  <PlayerAnimator>k__BackingField: {fileID: 637129502708852545}
+  <PlayerCombat>k__BackingField: {fileID: 5140074076762071764}
+  <PlayerDamageable>k__BackingField: {fileID: 5962688980122943577}
 --- !u!114 &8858804014626686278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2898,7 +2916,10 @@ MonoBehaviour:
   swordAttackDuration: 0.5
   swordAttackHitboxDelay: 0.25
   swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
---- !u!114 &879509138077680078
+  attackTargetLayers:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!114 &5962688980122943577
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2907,13 +2928,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5659858358309504054}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d4c6feac081437ea4f8382939144aaa, type: 3}
+  m_Script: {fileID: 11500000, guid: bd2a559dd7f44488dab166abb4abe893, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
-  playerInput: {fileID: 8858804014626686278}
-  playerMotor: {fileID: 6072224962607933027}
-  playerAnimator: {fileID: 637129502708852545}
-  playerCombat: {fileID: 5140074076762071764}
+  m_EditorClassIdentifier: Assembly-CSharp::Damageable
+  maxHealth: 10
+  damageInvincibilityDuration: 0.5
 --- !u!1 &5710332999393756249
 GameObject:
   m_ObjectHideFlags: 0

@@ -1654,8 +1654,8 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 8858804014626686278}
           m_TargetAssemblyTypeName: PlayerInputReader, Assembly-CSharp
-          m_MethodName: OnRollButtonPointerDown
-          m_Mode: 0
+          m_MethodName: OnRollButtonPressed
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2131,8 +2131,8 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 8858804014626686278}
           m_TargetAssemblyTypeName: PlayerInputReader, Assembly-CSharp
-          m_MethodName: OnSwordAttackButtonPointerDown
-          m_Mode: 0
+          m_MethodName: OnSwordAttackButtonPressed
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2862,7 +2862,6 @@ MonoBehaviour:
   movementJoystickRadius: 0
   cameraLookArea: {fileID: 8948787540682495937}
   lookSensitivity: 0.05
-  movementInputThreshold: 0.001
 --- !u!114 &6072224962607933027
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2910,7 +2909,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36f6c5443f04f659696ea227e79bbcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
-  motor: {fileID: 6072224962607933027}
   swordAttackHitboxPrefab: {fileID: 6904962620256523602, guid: c4abc1fb9607e4a4592b0ef525f6c136, type: 3}
   swordAttackDamage: 1
   swordAttackDuration: 0.5
@@ -2918,7 +2916,7 @@ MonoBehaviour:
   swordAttackHitboxLocalOffset: {x: 0, y: 1, z: 1}
   attackTargetLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
 --- !u!114 &5962688980122943577
 MonoBehaviour:
   m_ObjectHideFlags: 0

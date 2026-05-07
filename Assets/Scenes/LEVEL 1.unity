@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -1735,7 +1735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -4682,7 +4682,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -5691,7 +5691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -5714,7 +5714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -7557,7 +7557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -9674,7 +9674,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -11796,7 +11796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -11884,7 +11884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -12186,7 +12186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -12515,7 +12515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -14355,7 +14355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -15762,7 +15762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -17317,7 +17317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -17485,7 +17485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:

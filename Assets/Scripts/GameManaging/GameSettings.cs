@@ -13,6 +13,7 @@ namespace GameManaging
         {
             settingsObject = Resources.Load<GameSettingsObject>("GameSettingsObject");
             Debug = settingsObject.Debug;
+            GlobalGameManager.ClearLists();
         }
     }
 }

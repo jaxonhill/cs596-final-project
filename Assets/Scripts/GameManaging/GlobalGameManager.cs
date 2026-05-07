@@ -6,16 +6,38 @@ namespace GameManaging
     /// Manages dynamic data that multiple scripts need access to 
     public static class GlobalGameManager
     {
-        private static readonly List<Transform> friendlies = new();
-        private static readonly List<Transform> enemies = new();
-        
-        public static void AddAlly(Transform ally) { friendlies.Add(ally); }
-    
-        public static void RemoveAlly(Transform ally){friendlies.Remove(ally);}
-    
-        public static void AddEnemy(Transform enemy) { enemies.Add(enemy); }
-    
-        public static void RemoveEnemy(Transform enemy){enemies.Remove(enemy);}
+        private static List<Transform> friendlies = new();
+        private static List<Transform> enemies = new();
+
+        public static void ClearLists()
+        {
+            friendlies = new List<Transform>();
+            enemies = new List<Transform>();
+        }
+
+        public static void AddAlly(Transform ally)
+        {
+            if(friendlies.Contains(ally)) return;
+            friendlies.Add(ally);
+        }
+
+        public static void RemoveAlly(Transform ally)
+        {
+            if(!friendlies.Contains(ally)) return;
+            friendlies.Remove(ally);
+        }
+
+        public static void AddEnemy(Transform enemy)
+        {
+            if (enemies.Contains(enemy)) return;
+            enemies.Add(enemy);
+        }
+
+        public static void RemoveEnemy(Transform enemy)
+        {
+            if (!enemies.Contains(enemy)) return;
+            enemies.Remove(enemy);
+        }
     
         public static List<Transform> GetFriendlies(){return friendlies;}
     

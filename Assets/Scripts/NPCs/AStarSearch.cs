@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using GameManaging;
 using Tools;
 using Unity.VisualScripting;
@@ -54,9 +56,16 @@ namespace NPCs
             openList.Add(startingNode); // Add the starting node to the open list
 
             AStarNode goalNode = null; // The found goal node
+
+            var timeout = false;
             
-            while (openList.Count > 0 && goalNode.IsUnityNull()) // While the list is not empty
+            while (openList.Count > 0 && goalNode.IsUnityNull() && !timeout) // While the list is not empty
             {
+
+                if (closedList.Count > 500)
+                {
+                    timeout = true;
+                }
                 
                 //SUBHEADER ___Obtain Successors___
                 var q = Pop(openList); // Pop from Open List

@@ -52,7 +52,7 @@ namespace Components
         
         // HEADER: POSITION LOGIC
 
-        private static Vector3 GetGroundedPosition(Vector3 pos) { return new Vector3(pos.x, 0, pos.z); }
+        private Vector3 GetGroundedPosition(Vector3 pos) { return new Vector3(pos.x, position.y, pos.z); }
         private Vector3 gPos => GetGroundedPosition(position);
 
         /// Returns true if an NPC is within a certain distance from a coordinate 
@@ -70,7 +70,7 @@ namespace Components
         {
             // Move gradually towards the new position
             var new_pos = Vector3.MoveTowards(
-                GetGroundedPosition(position), GetGroundedPosition(location), speed * Time.fixedDeltaTime);
+                position, location, speed * Time.fixedDeltaTime);
             
             // Conversely, turn instantly towards the direction of movement
             var direction = GetDirectionIgnoreY(new_pos);

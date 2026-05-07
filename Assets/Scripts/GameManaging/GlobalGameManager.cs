@@ -8,7 +8,7 @@ namespace GameManaging
     {
         private static readonly List<Transform> friendlies = new();
         private static readonly List<Transform> enemies = new();
-
+        
         public static void AddAlly(Transform ally) { friendlies.Add(ally); }
     
         public static void RemoveAlly(Transform ally){friendlies.Remove(ally);}

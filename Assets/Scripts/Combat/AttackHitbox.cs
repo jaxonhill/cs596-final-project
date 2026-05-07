@@ -6,6 +6,7 @@ namespace Combat
     public class AttackHitbox : MonoBehaviour
     {
         [SerializeField] private int damage;
+        public int Damage => damage;
         [SerializeField] private LayerMask targetLayers;
 
         private GameObject owner;

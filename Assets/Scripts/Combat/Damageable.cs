@@ -10,7 +10,7 @@ namespace Combat
         [Header("Invincibility")]
         [SerializeField] private float damageInvincibilityDuration = 0.5f;
 
-        private int currentHealth;
+        [SerializeField] private int currentHealth;
         private bool isStateInvincible;
         private float damageInvincibleUntil;
 

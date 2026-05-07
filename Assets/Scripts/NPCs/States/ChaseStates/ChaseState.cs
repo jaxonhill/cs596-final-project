@@ -42,7 +42,7 @@ namespace NPCs.States.ChaseStates
             // If NPC is in range of their target, do an attack
             if (!CheckIfInRange()) return;
             
-            _ = stateMachine.ChangeToState(NPCStateEnum.Attacking); 
+            _ = stateMachine.ChangeToState(NPCStateEnum.Chasing, NPCStateEnum.Attacking); 
         }
 
         public override UniTask Exit()

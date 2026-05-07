@@ -159,7 +159,7 @@ namespace NPCs.States.IdleStates
         /// Enemy changes to Chase State, and chases the given target 
         private void ChaseTarget(Transform target) {
             enemy.SetTarget(target);
-            _ =  stateMachine.ChangeToState(NPCStateEnum.Chasing);
+            _ =  stateMachine.ChangeToState(NPCStateEnum.Idle, NPCStateEnum.Chasing);
         }
         
         /// Iterate through a list of visible enemies to determine which one is the closest (enemy will be set to target this one)

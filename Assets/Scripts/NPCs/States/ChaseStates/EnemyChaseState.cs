@@ -15,8 +15,8 @@ namespace NPCs.States.ChaseStates
 
         /// If the enemy loses a target, search for them
         protected override void IfLost() {
-            if(enemy.GetWillSearch()) { _ = stateMachine.ChangeToState(NPCStateEnum.Searching); return; }
-            _ = stateMachine.ChangeToState(NPCStateEnum.Idle);
+            if(enemy.GetWillSearch()) { _ = stateMachine.ChangeToState(NPCStateEnum.Chasing, NPCStateEnum.Searching); return; }
+            _ = stateMachine.ChangeToState(NPCStateEnum.Chasing, NPCStateEnum.Idle);
         }
         
     }

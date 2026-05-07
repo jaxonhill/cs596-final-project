@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Combat;
 using Components;
 using Cysharp.Threading.Tasks;
 using GameManaging;
@@ -48,12 +49,19 @@ namespace NPCs.States.AttackStates
             // Use a Boxcast to determine who's in the attack range
             var new_hits = PhyTools.BoxCastAll(position, halfExtents,
                 npc.transform.forward, Quaternion.identity, attack.GetRange(), Color.blue);
-            Health health;
             foreach (var hit in new_hits.Where(hit => !hits.Contains(hit)))
             {
-                health = hit.GetComponent<Health>();
-                health.LowerHealth(attack.GetValue());
-                hits.Add(hit);
+                if (!hit || !GlobalGameManager.GetTargets(npc.transform).Contains(hit)) continue;
+                if (hit.TryGetComponent<Health>(out var hit_health))
+                {
+                    hit_health.LowerHealth(attack.GetValue());
+                    hits.Add(hit);
+                }
+                else if (hit.TryGetComponent<Damageable>(out var hit_damage))
+                {
+                    hit_damage.TakeDamage(attack.GetValue(), npc.gameObject);
+                    hits.Add(hit);
+                }
             }
         }
         

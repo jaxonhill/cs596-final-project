@@ -23,6 +23,7 @@ namespace NPCs.States.StateMachines
          * Runtime Fields *
          * * * * * * * * */
         public NPCState currentState { get; protected set; }
+        protected NPCStateEnum currentStateEnum = NPCStateEnum.None;
         private bool awaitingRun;
         private bool stop;
 
@@ -34,7 +35,7 @@ namespace NPCs.States.StateMachines
         
         // HEADER: START
 
-        protected virtual void Start() { _ = ChangeToState(NPCStateEnum.Idle); }
+        protected virtual void Start() { _ = ChangeToState(NPCStateEnum.None, NPCStateEnum.Idle); }
         
         
         // HEADER: RUN METHODS
@@ -58,10 +59,11 @@ namespace NPCs.States.StateMachines
         // HEADER: STATE MANAGEMENT
         // ReSharper disable Unity.PerformanceAnalysis
         /// Exit old state, change to new state, enter new state
-        public async UniTask ChangeToState(NPCStateEnum state)
+        public async UniTask ChangeToState(NPCStateEnum old_state, NPCStateEnum state, bool stopRun = false)
         {
+            if (currentStateEnum != old_state && (int)old_state >= 0) return;
 
-            if (awaitingRun) await UniTask.WaitUntil(() => !awaitingRun);
+            if (awaitingRun && !stopRun) await UniTask.WaitUntil(() => !awaitingRun);
             
             // Stop the current running state
             stop = true;
@@ -73,10 +75,10 @@ namespace NPCs.States.StateMachines
             
             // Change to the new state
             await SetState(state);
-
+            
             // Enter the new state
             if(currentState != null)  { await currentState.Enter(); }
-
+            
             // Resume state running
             stop = false;
             
@@ -87,11 +89,21 @@ namespace NPCs.States.StateMachines
         protected virtual async UniTask SetState(NPCStateEnum state)
         {
             switch (state) {
-                case NPCStateEnum.Idle: await ChangeToIdleState(); break;
-                case NPCStateEnum.Chasing: await ChangeToChaseState(); break;
-                case NPCStateEnum.Attacking: await ChangeToAttackState(); break;
-                case NPCStateEnum.Damaged: await ChangeToDamagedState(); break;
-                case NPCStateEnum.Death: await ChangeToDyingState(); break;
+                case NPCStateEnum.Idle: 
+                    currentStateEnum = NPCStateEnum.Idle;
+                    await ChangeToIdleState(); break;
+                case NPCStateEnum.Chasing: 
+                    currentStateEnum = NPCStateEnum.Chasing;
+                    await ChangeToChaseState(); break;
+                case NPCStateEnum.Attacking: 
+                    currentStateEnum = NPCStateEnum.Attacking;
+                    await ChangeToAttackState(); break;
+                case NPCStateEnum.Damaged:
+                    currentStateEnum = NPCStateEnum.Damaged;
+                    await ChangeToDamagedState(); break;
+                case NPCStateEnum.Death: 
+                    currentStateEnum = NPCStateEnum.Death;
+                    await ChangeToDyingState(); break;
                 default: throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }

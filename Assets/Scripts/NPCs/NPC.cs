@@ -100,6 +100,18 @@ namespace NPCs
             if (!anim) return;
             anim.SetBool(Animator.StringToHash(id), value);
         } 
+        
+        public async UniTask AwaitAnimationBool(string id)
+        {
+            if (!anim) return;
+            anim.SetBool(Animator.StringToHash(id), true);
+            
+            var animId = (int)GetAnimationEnum(id);
+            if (animId < 0) return;
+            animationPlaying[animId] = true;
+            
+            await UniTask.WaitUntil(() => !animationPlaying[animId]);
+        }
 
         public void AnimationFinished(AnimationScript.AnimationStateEnum animID) {
             animationPlaying[(int)animID] = false; }

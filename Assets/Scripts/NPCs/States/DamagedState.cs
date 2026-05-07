@@ -14,21 +14,20 @@ namespace NPCs.States
         // HEADER: STATE METHODS
         
         // ReSharper disable Unity.PerformanceAnalysis
-        public override UniTask Enter() {
+        public override async UniTask Enter() {
             
             // If HP reaches 0, die
-            if (health.GetValue() <= 0) { _ = stateMachine.ChangeToState(NPCStateEnum.Death); }
+            if (health.GetValue() <= 0) { _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Death); return; }
 
-            movement.SetValue(0); // Stun the NPC temporarily
+            movement.Stop(); // Stun the NPC temporarily
             
-            //await npc.SetAnimationTrigger("Damage");
+            await npc.AwaitAnimationTrigger("Damage");
             
             // If the NPC's target still lives, return to Chasing State
-            if (npc.target != null) { _ = stateMachine.ChangeToState(NPCStateEnum.Chasing); return UniTask.CompletedTask; }
+            if (npc.target != null) { _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Chasing); return; }
             
             // Otherwise, return to Idle State
-            _ = stateMachine.ChangeToState(NPCStateEnum.Idle);
-            return UniTask.CompletedTask;
+            _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Idle);
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }

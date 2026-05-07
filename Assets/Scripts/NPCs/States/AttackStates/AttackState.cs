@@ -29,16 +29,15 @@ namespace NPCs.States.AttackStates
             
             await UniTask.Delay(attack.GetCooldown()); // Wait for the cooldown
             
-            // If the target is not dead or dying, go back to chasing them (which will change back to an attack state immediately if still in range)
-            if (TargetAlive() 
-                && CheckIfInRange()) {
-                _ = stateMachine.ChangeToState(NPCStateEnum.Attacking); return; }
-            if (CheckIfInRange()) {
-                _ = stateMachine.ChangeToState(NPCStateEnum.Chasing); return; }
-            // Otherwise, the enemy goes back to being idle 
-            _ = stateMachine.ChangeToState(NPCStateEnum.Idle);
+            //If the target is dead, go back to idle state
+            if (!TargetAlive()) { _ = stateMachine.ChangeToState(NPCStateEnum.Attacking, NPCStateEnum.Idle); return; }
+            // If the target is alive but not in sight, go to search state
+            if (!npc.TargetInSight()) { _ = stateMachine.ChangeToState(NPCStateEnum.Attacking, NPCStateEnum.Searching); return; }
+            // If the target is alive and in sight but not in range, chase them
+            if (!CheckIfInRange()) { _ = stateMachine.ChangeToState(NPCStateEnum.Attacking, NPCStateEnum.Chasing); return; }
+            // If the target is alive and in sight and in range, attack again
+            _ = Enter(); 
         }
-
         
         public override UniTask Run() { return UniTask.CompletedTask; }
 

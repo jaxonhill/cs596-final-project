@@ -1,7 +1,7 @@
 using GameManaging;
 using UnityEngine;
 
-public class TempPlayerScript : MonoBehaviour
+public class PlayerTargetingBox : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()

@@ -38,6 +38,10 @@ namespace NPCs.States
         /// <see cref="NPCStateEnum.Death">Death</see> ]
         public enum NPCStateEnum
         {
+            /// Any state
+            Any = -2,
+            /// No state
+            None = -1,
             /// Idle State: Default state where NPC is not chasing, attacking, etc
             Idle = 0,
             /// Chasing State: State where NPC is pursuing a target

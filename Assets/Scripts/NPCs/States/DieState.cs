@@ -9,17 +9,15 @@ namespace NPCs.States
     public class DieState : NPCState
     {
         public DieState(NPC npc) : base(npc) {}
-        
-        private Movement movement;
-        
         // ReSharper disable Unity.PerformanceAnalysis
         // ReSharper disable once AsyncVoidMethod
         public override async UniTask Enter()
         {
             movement.SetValue(0);
-            //await npc.SetAnimationTrigger("Death");
+            await npc.AwaitAnimationTrigger("Death");
             GlobalGameManager.RemoveEnemy(npc.transform);
-            await UniTask.Delay(1000); Exit();
+            await UniTask.Delay(1500); 
+            Exit();
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }

@@ -10,6 +10,6 @@ namespace NPCs.States.ChaseStates
         
         public FriendlyChaseState(NPC npc) : base(npc) {}
 
-        protected override void IfLost() { _ = stateMachine.ChangeToState(NPCStateEnum.Idle); }
+        protected override void IfLost() { _ = stateMachine.ChangeToState(NPCStateEnum.Chasing, NPCStateEnum.Idle); }
     }
 }

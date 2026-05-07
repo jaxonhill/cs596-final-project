@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Combat;
 using GameManaging;
+using NPCs.States;
 using NPCs.States.StateMachines;
 using TriInspector;
 using UnityEngine;
@@ -56,5 +58,14 @@ namespace NPCs.Enemies
         public int GetPatrolDelay(){return patrolDelay;}
         
         public bool GetWillSearch(){return willSearch;}
+        
+        // HEADER: DAMAGED
+
+        private void OnTriggerEnter(Collider collision)
+        {
+            if (!collision.transform.TryGetComponent<AttackHitbox>(out var hitbox)) return;
+            if (stateMachine.currentState is DamagedState or DieState) return;
+            health.OnDamaged(hitbox.Damage);
+        }
     }
 }

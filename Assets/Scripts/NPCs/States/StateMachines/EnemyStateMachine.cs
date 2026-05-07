@@ -28,7 +28,11 @@ namespace NPCs.States.StateMachines
         // HEADER: STATE MANAGEMENT
 
         protected override async UniTask SetState(NPCStateEnum state) {
-            if (state == NPCStateEnum.Searching) { await ChangeToSearchState(); return; }
+            if (state == NPCStateEnum.Searching)
+            {
+                currentStateEnum = NPCStateEnum.Searching;
+                await ChangeToSearchState(); return;
+            }
             await base.SetState(state);
         }
         

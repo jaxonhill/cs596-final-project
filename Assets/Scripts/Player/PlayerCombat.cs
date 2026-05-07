@@ -1,86 +1,90 @@
+using Combat;
 using UnityEngine;
 
-public class PlayerCombat : MonoBehaviour
-{
-    [SerializeField] private GameObject swordAttackHitboxPrefab;
-    [SerializeField] private int swordAttackDamage = 1;
-    [SerializeField] private float swordAttackDuration = 0.50f;
-    [SerializeField] private float swordAttackHitboxDelay = 0.25f;
-    [SerializeField] private Vector3 swordAttackHitboxLocalOffset = new Vector3(0f, 1f, 1f);
-    [SerializeField] private LayerMask attackTargetLayers;
-
-    private GameObject spawnedHitbox;
-    private bool hasSwordAttackHitboxSpawned;
-    private float swordAttackHitboxSpawnTime;
-    private float swordAttackHitboxEndTime;
-
-    public bool IsSwordAttackFinished => Time.time >= swordAttackHitboxEndTime;
-
-    private void Awake()
+namespace Player {
+    public class PlayerCombat : MonoBehaviour
     {
-        if (swordAttackHitboxPrefab == null)
-        {
-            Debug.LogError($"PlayerCombat requires sword attack hitbox prefab assigned to '{nameof(swordAttackHitboxPrefab)}' on {name}.", this);
-        }
-        else
-        {
-            Debug.Log($"PlayerCombat found required sword attack hitbox prefab reference on {name}.", this);
-        }
+        [SerializeField] private GameObject swordAttackHitboxPrefab;
+        [SerializeField] private int swordAttackDamage = 1;
+        [SerializeField] private float swordAttackDuration = 0.50f;
+        [SerializeField] private float swordAttackHitboxDelay = 0.25f;
+        [SerializeField] private Vector3 swordAttackHitboxLocalOffset = new Vector3(0f, 1f, 1f);
+        [SerializeField] private LayerMask attackTargetLayers;
 
-        if (swordAttackHitboxPrefab == null)
-        {
-            enabled = false;
-        }
-    }
+        private GameObject spawnedHitbox;
+        private bool hasSwordAttackHitboxSpawned;
+        private float swordAttackHitboxSpawnTime;
+        private float swordAttackHitboxEndTime;
 
-    public void BeginSwordAttack()
-    {
-        swordAttackHitboxEndTime = Time.time + swordAttackDuration;
-        swordAttackHitboxSpawnTime = Time.time + swordAttackHitboxDelay;
-        hasSwordAttackHitboxSpawned = false;
-    }
+        public bool IsSwordAttackFinished => Time.time >= swordAttackHitboxEndTime;
 
-    public void UpdateSwordAttack()
-    {
-        if (swordAttackHitboxPrefab == null)
+        private void Awake()
         {
-            Debug.LogError($"PlayerCombat cannot update sword attack because '{nameof(swordAttackHitboxPrefab)}' is missing on {name}.", this);
-            return;
-        }
+            if (swordAttackHitboxPrefab == null)
+            {
+                Debug.LogError($"PlayerCombat requires sword attack hitbox prefab assigned to '{nameof(swordAttackHitboxPrefab)}' on {name}.", this);
+            }
+            else
+            {
+                Debug.Log($"PlayerCombat found required sword attack hitbox prefab reference on {name}.", this);
+            }
 
-        if (!hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxSpawnTime)
-        {
-            SpawnSwordAttackHitbox();
+            if (swordAttackHitboxPrefab == null)
+            {
+                enabled = false;
+            }
         }
 
-        if (hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxEndTime)
+        public void BeginSwordAttack()
         {
-            Destroy(spawnedHitbox);
-            spawnedHitbox = null;
-        }
-    }
-
-    private void SpawnSwordAttackHitbox()
-    {
-        hasSwordAttackHitboxSpawned = true;
-
-        if (swordAttackHitboxPrefab == null)
-        {
-            Debug.LogWarning("Sword attack hitbox prefab is not assigned.", this);
-            return;
+            swordAttackHitboxEndTime = Time.time + swordAttackDuration;
+            swordAttackHitboxSpawnTime = Time.time + swordAttackHitboxDelay;
+            hasSwordAttackHitboxSpawned = false;
         }
 
-        Vector3 spawnPosition = transform.TransformPoint(swordAttackHitboxLocalOffset);
-        spawnedHitbox = Instantiate(swordAttackHitboxPrefab, spawnPosition, transform.rotation);
+        public void UpdateSwordAttack()
+        {
+            if (swordAttackHitboxPrefab == null)
+            {
+                Debug.LogError($"PlayerCombat cannot update sword attack because '{nameof(swordAttackHitboxPrefab)}' is missing on {name}.", this);
+                return;
+            }
 
-        AttackHitbox attackHitbox = spawnedHitbox.GetComponent<AttackHitbox>();
-        if (attackHitbox != null)
-        {
-            attackHitbox.Initialize(gameObject, swordAttackDamage, attackTargetLayers);
+            if (!hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxSpawnTime)
+            {
+                SpawnSwordAttackHitbox();
+            }
+
+            if (hasSwordAttackHitboxSpawned && Time.time >= swordAttackHitboxEndTime)
+            {
+                Destroy(spawnedHitbox);
+                spawnedHitbox = null;
+            }
         }
-        else
+
+        private void SpawnSwordAttackHitbox()
         {
-            Debug.LogWarning("[PlayerCombat] Spawned sword hitbox is missing AttackHitbox component.", spawnedHitbox);
+            hasSwordAttackHitboxSpawned = true;
+
+            if (swordAttackHitboxPrefab == null)
+            {
+                Debug.LogWarning("Sword attack hitbox prefab is not assigned.", this);
+                return;
+            }
+
+            Vector3 spawnPosition = transform.TransformPoint(swordAttackHitboxLocalOffset);
+            spawnedHitbox = Instantiate(swordAttackHitboxPrefab, spawnPosition, transform.rotation);
+
+            AttackHitbox attackHitbox = spawnedHitbox.GetComponent<AttackHitbox>();
+            if (attackHitbox != null)
+            {
+                attackHitbox.Initialize(gameObject, swordAttackDamage, attackTargetLayers);
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerCombat] Spawned sword hitbox is missing AttackHitbox component.", spawnedHitbox);
+            }
         }
     }
 }
+

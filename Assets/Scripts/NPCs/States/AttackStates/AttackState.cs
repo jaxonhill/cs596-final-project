@@ -39,6 +39,7 @@ namespace NPCs.States.AttackStates
             _ = stateMachine.ChangeToState(NPCStateEnum.Idle);
         }
 
+        
         public override UniTask Run() { return UniTask.CompletedTask; }
 
         public override UniTask Exit() { return UniTask.CompletedTask; }

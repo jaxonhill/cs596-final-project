@@ -1,38 +1,41 @@
-public class PlayerSwordAttackState : PlayerBaseState
+namespace Player.States
 {
-    public PlayerSwordAttackState(PlayerStateMachine currentContext) : base(currentContext)
+    public class PlayerSwordAttackState : PlayerBaseState
     {
-    }
-
-    public override void EnterState()
-    {
-        player.PlayerMotor.StopHorizontalMovement();
-        player.PlayerCombat.BeginSwordAttack();
-        player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
-    }
-
-    public override void UpdateState()
-    {
-        player.PlayerCombat.UpdateSwordAttack();
-    }
-
-    public override void ExitState()
-    {
-    }
-
-    public override void CheckSwitchStates()
-    {
-        if (!player.PlayerCombat.IsSwordAttackFinished)
+        public PlayerSwordAttackState(PlayerStateMachine currentContext) : base(currentContext)
         {
-            return;
         }
 
-        if (!player.PlayerMotor.IsGrounded)
+        public override void EnterState()
         {
-            player.SwitchState(player.FallState);
-            return;
+            player.PlayerMotor.StopHorizontalMovement();
+            player.PlayerCombat.BeginSwordAttack();
+            player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
         }
 
-        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        public override void UpdateState()
+        {
+            player.PlayerCombat.UpdateSwordAttack();
+        }
+
+        public override void ExitState()
+        {
+        }
+
+        public override void CheckSwitchStates()
+        {
+            if (!player.PlayerCombat.IsSwordAttackFinished)
+            {
+                return;
+            }
+
+            if (!player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.FallState);
+                return;
+            }
+
+            player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        }
     }
 }

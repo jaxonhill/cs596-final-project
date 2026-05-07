@@ -1,34 +1,37 @@
 using UnityEngine;
 
-public class Health : MonoBehaviour
+namespace Player
 {
-    public int totalHealth = 3;
-    public int currentHealth;
-
-    void Start()
+    public class Health : MonoBehaviour
     {
-        currentHealth = totalHealth;
-    }
+        public int totalHealth = 3;
+        public int currentHealth;
 
-    public void DamageTaken(int damage)
-    {
-        currentHealth -= damage;
-        Debug.Log(gameObject.name + " Health: " + currentHealth);
-
-        if (currentHealth <= 0)
+        void Start()
         {
-            Die();
-        }
-    }
-
-    void Die()
-    {
-        if (CompareTag("Player"))
-        {
-            Debug.Log("Player died");
-            return;
+            currentHealth = totalHealth;
         }
 
-        Destroy(gameObject);
+        public void DamageTaken(int damage)
+        {
+            currentHealth -= damage;
+            Debug.Log(gameObject.name + " Health: " + currentHealth);
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
+        }
+
+        void Die()
+        {
+            if (CompareTag("Player"))
+            {
+                Debug.Log("Player died");
+                return;
+            }
+
+            Destroy(gameObject);
+        }
     }
 }

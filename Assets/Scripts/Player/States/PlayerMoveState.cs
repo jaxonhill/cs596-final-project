@@ -1,52 +1,55 @@
-public class PlayerMoveState : PlayerBaseState
+namespace Player.States
 {
-    public PlayerMoveState(PlayerStateMachine currentContext) : base(currentContext)
+    public class PlayerMoveState : PlayerBaseState
     {
-    }
-
-    public override void EnterState()
-    {
-        player.PlayerAnimator.Play(PlayerAnimation.MOVE_F);
-    }
-
-    public override void UpdateState()
-    {
-        player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
-    }
-
-    public override void ExitState()
-    {
-    }
-
-    public override void CheckSwitchStates()
-    {
-        if (player.PlayerInput.IsSwordAttackPressed && player.PlayerMotor.IsGrounded)
+        public PlayerMoveState(PlayerStateMachine currentContext) : base(currentContext)
         {
-            player.SwitchState(player.SwordAttackState);
-            return;
         }
 
-        if (player.PlayerInput.IsRollPressed && player.PlayerMotor.IsGrounded)
+        public override void EnterState()
         {
-            player.SwitchState(player.RollState);
-            return;
+            player.PlayerAnimator.Play(PlayerAnimation.MOVE_F);
         }
 
-        if (player.PlayerInput.IsJumpPressed && player.PlayerMotor.IsGrounded)
+        public override void UpdateState()
         {
-            player.SwitchState(player.JumpState);
-            return;
+            player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
         }
 
-        if (!player.PlayerMotor.IsGrounded)
+        public override void ExitState()
         {
-            player.SwitchState(player.FallState);
-            return;
         }
 
-        if (!player.PlayerInput.IsTryingToMove)
+        public override void CheckSwitchStates()
         {
-            player.SwitchState(player.IdleState);
+            if (player.PlayerInput.IsSwordAttackPressed && player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.SwordAttackState);
+                return;
+            }
+
+            if (player.PlayerInput.IsRollPressed && player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.RollState);
+                return;
+            }
+
+            if (player.PlayerInput.IsJumpPressed && player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.JumpState);
+                return;
+            }
+
+            if (!player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.FallState);
+                return;
+            }
+
+            if (!player.PlayerInput.IsTryingToMove)
+            {
+                player.SwitchState(player.IdleState);
+            }
         }
     }
 }

@@ -1,28 +1,31 @@
-public class PlayerFallState : PlayerBaseState
+namespace Player.States
 {
-    public PlayerFallState(PlayerStateMachine currentContext) : base(currentContext)
+    public class PlayerFallState : PlayerBaseState
     {
-    }
-
-    public override void EnterState()
-    {
-        player.PlayerAnimator.Play(PlayerAnimation.FALL);
-    }
-
-    public override void UpdateState()
-    {
-        player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
-    }
-
-    public override void ExitState()
-    {
-    }
-
-    public override void CheckSwitchStates()
-    {
-        if (player.PlayerMotor.IsGrounded)
+        public PlayerFallState(PlayerStateMachine currentContext) : base(currentContext)
         {
-            player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        }
+
+        public override void EnterState()
+        {
+            player.PlayerAnimator.Play(PlayerAnimation.FALL);
+        }
+
+        public override void UpdateState()
+        {
+            player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
+        }
+
+        public override void ExitState()
+        {
+        }
+
+        public override void CheckSwitchStates()
+        {
+            if (player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+            }
         }
     }
 }

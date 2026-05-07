@@ -1,5 +1,3 @@
-using NPCs.States.AttackStates;
-using NPCs.States.ChaseStates;
 using TriInspector;
 using UnityEngine;
 
@@ -9,17 +7,23 @@ namespace NPCs.Enemies
     [HideMonoScript]
     public class RangedEnemy : BaseEnemy
     {
+        [Title("Projectiles")]
+        
         [Tooltip("Prefab of the projectile object"), SerializeField]
         private GameObject projectile;
         public GameObject Projectile => projectile;
-        
-        [Tooltip("Offset from the NPC where an arrow should spawn")]
-        public int offsetAmount { get; private set; }
-        
-        [Tooltip("How fast the projectile should travel")]
-        public int projectileSpeed { get; private set; }
-        
-        
+
+        [Tooltip("Offset from the NPC where an arrow should spawn"), SerializeField]
+        private Vector3 offsetAmount;
+        public Vector3 OffsetAmount => offsetAmount;
+
+        [Tooltip("How fast the projectile should travel"), SerializeField]
+        private int projectileSpeed;
+        public int ProjectileSpeed => projectileSpeed;
+
+        public bool nowThrow;
+
+
         public RangedEnemy() { willSearch = false; }
     }
 }

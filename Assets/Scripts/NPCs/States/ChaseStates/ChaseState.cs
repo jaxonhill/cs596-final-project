@@ -24,7 +24,7 @@ namespace NPCs.States.ChaseStates
         public override UniTask Enter() {
             // Initialize Values
             target = npc.target; 
-            movement.SetValue(movement.defaultSpeed + 5); 
+            movement.SetValue(movement.defaultSpeed + 3); 
             
             // Animate
             npc.SetAnimationBool("Chase", true);

@@ -1,3 +1,4 @@
+using Combat;
 using Components;
 using GameManaging;
 using NPCs.Enemies;
@@ -22,7 +23,7 @@ namespace NPCs
         private void Start() { transform.LookAt(target); }
 
         // Move the projectile forward (with the given speed)
-        private void Update() { transform.position +=  Time.deltaTime * enemy.projectileSpeed * transform.forward; }
+        private void Update() { transform.position +=  Time.deltaTime * enemy.ProjectileSpeed * transform.forward; }
 
         // When the projectile collides with something
         public void OnTriggerEnter(Collider collision)
@@ -30,12 +31,17 @@ namespace NPCs
             if (!collision.transform) return; // If the collision doesn't have a transform (for some reason), return
             
             var hit = collision.transform;
+            if (!hit) return;
             
             if (hit.CompareTag(enemy.transform.tag)) return; // If the hit transform was the attacker (or an ally of them), return
             
             // If the hit transform is an enemy of the attacker, deal damage
             var tags = GlobalGameManager.GetTargetTags(enemy.transform);
-            if (tags.Contains(hit.tag)) { hit.GetComponent<Health>().OnDamaged(1); }
+            if (tags.Contains(hit.tag))
+            {
+                if(hit.TryGetComponent(out Health health)) {health.OnDamaged(enemy.attack.GetValue());}
+                if(hit.TryGetComponent(out Damageable damage)){damage.TakeDamage(enemy.attack.GetValue(), enemy.gameObject);}
+            }
             
             // Destroy the projectile
             Destroy(gameObject);

@@ -10,6 +10,7 @@ namespace NPCs.States.ChaseStates
         /* * * * *
          * CONSTS *
          * * * * */
+        /// Used to bypass a return value without committing to the actual truth value (true in this case)
         private const bool DISREGARD = true;
         /// Slack ensures the enemy get 10 units closer to the target than necessary, to ensure they don't immediately fall out of attack state
         private const int HARD_SLACK = 10;
@@ -24,22 +25,21 @@ namespace NPCs.States.ChaseStates
         /// True if the enemy is already following a path to a point in range of the target
         private bool followingTarget;
         /// The distance the enemy will reach before entering an attack state
-        private int Slack_Distance => attack.GetRange() - HARD_SLACK;
+        private int Hard_Slack_Distance => attack.GetRange() - HARD_SLACK;
         
         
         // HEADER: CONSTRUCTOR
         
         public RangedEnemyChaseState(RangedEnemy enemy) : base(enemy){}
-
         
         
         protected override void FollowTarget()
         {
-            if (movement.WithinLocation(attack.GetRange() - Slack_Distance, target.position)) return;
+            if (movement.WithinLocation(attack.GetRange() - Hard_Slack_Distance, target.position)) return;
             if (!followingTarget) {
-                followingTarget = true; 
-                curPath = AStarSearch.Search(enemy.transform, target.position, Slack_Distance);
+                curPath = AStarSearch.Search(enemy.transform, target.position, Hard_Slack_Distance);
                 if (curPath == NO_PATH) return;
+                followingTarget = true; 
                 movement.SetDestination(curPath.Pop());
             }
             if(!movement.AtDestination()){movement.MoveTowardsDestination();}

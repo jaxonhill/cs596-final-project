@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace Combat
 {
@@ -18,6 +19,9 @@ namespace Combat
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
 
+        public event Action Damaged;
+        public event Action Died;
+
         private void Awake()
         {
             currentHealth = maxHealth;
@@ -35,12 +39,13 @@ namespace Combat
             int healthBefore = currentHealth;
             currentHealth -= amount;
             Debug.Log($"[Damageable] {name} took {amount} damage from {source?.name}: {healthBefore} → {currentHealth} HP", this);
+            Damaged?.Invoke();
 
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
                 Debug.Log($"[Damageable] {name} died from {source?.name}", this);
-                // Death handling can be hooked here later
+                Died?.Invoke();
                 return;
             }
 

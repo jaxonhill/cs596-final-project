@@ -13,6 +13,7 @@ namespace Player.States
             PlayerAnimation rollAnimation = player.PlayerMotor.GetClosestRollAnimation(player.PlayerInput.MoveInput);
             player.PlayerMotor.BeginRoll(player.PlayerInput.MoveInput);
             player.PlayerAnimator.Play(rollAnimation);
+            player.PlayerAudio?.PlayRoll();
 
             if (player.PlayerDamageable != null)
             {

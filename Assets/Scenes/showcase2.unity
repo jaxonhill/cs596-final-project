@@ -3432,7 +3432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -4518,7 +4518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -7593,7 +7593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -9731,7 +9731,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -10241,7 +10241,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4a933c8c9b7f348ffab29ac49fd16ea4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.95
+      value: 8.88
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4a933c8c9b7f348ffab29ac49fd16ea4, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10309,7 +10309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -10988,7 +10988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:
@@ -13050,7 +13050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6cca67ef2514437bd45d067b8fe065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1
   attackCooldown: 2
   targetLayer:

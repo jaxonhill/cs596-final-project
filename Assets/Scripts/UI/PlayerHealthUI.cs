@@ -3,6 +3,8 @@ using Combat;
 using Player;
 using UnityEngine;
 using UnityEngine.UI;
+using Combat;
+using Player;
 
 public class PlayerHealthUI : MonoBehaviour
 {

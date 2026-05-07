@@ -61,6 +61,11 @@ namespace Combat
 
         public void Heal(int amount)
         {
+            if (amount <= 0 || currentHealth <= 0)
+            {
+                return;
+            }
+
             int healthBefore = currentHealth;
             currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
             Debug.Log($"[Damageable] {name} healed: {healthBefore} → {currentHealth} HP", this);

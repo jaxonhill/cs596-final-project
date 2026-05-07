@@ -1,7 +1,12 @@
+using UnityEngine;
+
 namespace Player.States
 {
     public class PlayerMoveState : PlayerBaseState
     {
+        private const float FootstepIntervalSeconds = 0.35f;
+        private float nextFootstepTime;
+
         public PlayerMoveState(PlayerStateMachine currentContext) : base(currentContext)
         {
         }
@@ -9,11 +14,18 @@ namespace Player.States
         public override void EnterState()
         {
             player.PlayerAnimator.Play(PlayerAnimation.MOVE_F);
+            nextFootstepTime = Time.time;
         }
 
         public override void UpdateState()
         {
             player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
+
+            if (player.PlayerMotor.IsGrounded && Time.time >= nextFootstepTime)
+            {
+                player.PlayerAudio?.OnFootstep();
+                nextFootstepTime = Time.time + FootstepIntervalSeconds;
+            }
         }
 
         public override void ExitState()

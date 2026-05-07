@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class PlayerIdleState : PlayerBaseState
 {
     public PlayerIdleState(PlayerStateMachine currentContext) : base(currentContext)
@@ -8,8 +6,8 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.HorizontalVelocity = Vector3.zero;
-        Ctx.Animator.CrossFade(Ctx.IdleAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        player.PlayerMotor.StopHorizontalMovement();
+        player.PlayerAnimator.Play(PlayerAnimation.IDLE);
     }
 
     public override void UpdateState()
@@ -22,33 +20,33 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (Ctx.SwordAttackPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsSwordAttackPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.SwordAttackState);
+            player.SwitchState(player.SwordAttackState);
             return;
         }
 
-        if (Ctx.RollPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsRollPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.RollState);
+            player.SwitchState(player.RollState);
             return;
         }
 
-        if (Ctx.JumpPressed && Ctx.IsGrounded)
+        if (player.PlayerInput.IsJumpPressed && player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.JumpState);
+            player.SwitchState(player.JumpState);
             return;
         }
 
-        if (!Ctx.IsGrounded)
+        if (!player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.FallState);
+            player.SwitchState(player.FallState);
             return;
         }
 
-        if (Ctx.HasMoveInput)
+        if (player.PlayerInput.IsTryingToMove)
         {
-            Ctx.SwitchState(Ctx.MoveState);
+            player.SwitchState(player.MoveState);
         }
     }
 }

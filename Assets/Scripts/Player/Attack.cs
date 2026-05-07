@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
     public float attackCooldown = 2f;
     public LayerMask targetLayer;
 
-    private float nextAttackTime = 0f;
+    private float nextAttackTime;
 
     public void TryAttack()
     {
@@ -35,4 +35,11 @@ public class Attack : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
     }
 
+    void Update()
+    {
+        if (CompareTag("Player") && Input.GetKeyDown(KeyCode.Space))
+        {
+            TryAttack();
+        }
+    }
 }

@@ -4,7 +4,7 @@ public class Health : MonoBehaviour
 {
     public int totalHealth = 3;
     public int currentHealth;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         currentHealth = totalHealth;
@@ -12,8 +12,8 @@ public class Health : MonoBehaviour
 
     public void DamageTaken(int damage)
     {
-        currentHealth  = currentHealth - damage;
-        Debug.Log(gameObject.name + " Health: "  + currentHealth);
+        currentHealth -= damage;
+        Debug.Log(gameObject.name + " Health: " + currentHealth);
 
         if (currentHealth <= 0)
         {
@@ -26,14 +26,9 @@ public class Health : MonoBehaviour
         if (CompareTag("Player"))
         {
             Debug.Log("Player died");
+            return;
         }
-        else {
-            Destroy(gameObject);
-        }
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+        Destroy(gameObject);
     }
 }

@@ -6,12 +6,12 @@ public class PlayerFallState : PlayerBaseState
 
     public override void EnterState()
     {
-        Ctx.Animator.CrossFade(Ctx.FallAnimationStateName, Ctx.AnimationCrossFadeDuration, 0);
+        player.PlayerAnimator.Play(PlayerAnimation.FALL);
     }
 
     public override void UpdateState()
     {
-        Ctx.ApplyLocomotion();
+        player.PlayerMotor.ApplyLocomotion(player.PlayerInput.MoveInput);
     }
 
     public override void ExitState()
@@ -20,9 +20,9 @@ public class PlayerFallState : PlayerBaseState
 
     public override void CheckSwitchStates()
     {
-        if (Ctx.IsGrounded)
+        if (player.PlayerMotor.IsGrounded)
         {
-            Ctx.SwitchState(Ctx.HasMoveInput ? Ctx.MoveState : Ctx.IdleState);
+            player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
         }
     }
 }

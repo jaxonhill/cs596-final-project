@@ -1,3 +1,4 @@
+using GameManaging;
 using UnityEngine;
 
 public class TempPlayerScript : MonoBehaviour

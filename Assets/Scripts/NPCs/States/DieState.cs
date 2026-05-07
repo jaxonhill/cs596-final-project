@@ -1,26 +1,33 @@
+using Components;
 using Cysharp.Threading.Tasks;
+using GameManaging;
 using NPCs.Enemies;
+using UnityEngine;
 
 namespace NPCs.States
 {
     public class DieState : NPCState
     {
+        public DieState(NPC npc) : base(npc) {}
         
-        public DieState(NPC new_npc) { npc = new_npc; }
+        private Movement movement;
         
         // ReSharper disable Unity.PerformanceAnalysis
-        public override async void Enter()
+        // ReSharper disable once AsyncVoidMethod
+        public override async UniTask Enter()
         {
+            movement.SetValue(0);
+            //await npc.SetAnimationTrigger("Death");
             GlobalGameManager.RemoveEnemy(npc.transform);
-            await UniTask.Delay(1000);
-            Exit();
+            await UniTask.Delay(1000); Exit();
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }
 
-        public override void Exit()
+        public override UniTask Exit()
         {
-            Destroy(npc);
+            npc.Destroy(); 
+            return UniTask.CompletedTask;
         }
     }
 }

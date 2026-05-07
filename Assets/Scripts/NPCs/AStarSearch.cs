@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using GameManaging;
+using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
+using Vertx.Debugging;
 
 namespace NPCs
 {
@@ -33,7 +36,7 @@ namespace NPCs
         }
 
         /// <summary> Use A* Search to find a path between a Starting and Goal position </summary>
-        public static Stack<Vector3> Search(Transform entity, Vector3 goal)
+        public static Stack<Vector3> Search(Transform entity, Vector3 goal, float threshold = 1)
         {
             //HEADER: __Initializations__ 
             
@@ -58,7 +61,6 @@ namespace NPCs
                 //SUBHEADER ___Obtain Successors___
                 var q = Pop(openList); // Pop from Open List
                 var successors = GetSuccessors(q.position);
-
                 
                 // For each successor position that is valid for the enemy to move into
                 foreach (var successor in successors.Where(successor => IsValidPosition(successor, size)))
@@ -66,8 +68,10 @@ namespace NPCs
                     //SUBHEADER ___Goal is Found___
                     
                     // Check if the distance from the goal position is below a threshold. If so, set this successor as the goal node 
-                    if (Vector3.Distance(successor, goal) < 1)
-                    { goalNode = new AStarNode(successor, q, 0, 999); break;  } 
+                    if (Vector3.Distance(successor, goal) < threshold)
+                    {
+                        goalNode = new AStarNode(successor, q, 0, 999); break;
+                    } 
                     
                     //SUBHEADER ___Compute G, H, & F___
 
@@ -125,10 +129,10 @@ namespace NPCs
             
             // Get all the colliders at this position
             // ReSharper disable once Unity.PreferNonAllocApi
-            var hits = Physics.OverlapBox(pos, halfExtents, new Quaternion(0,0,0,1));
-            return hits.Length <= 0 || // Position is valid to move to if no colliders are found, or
+            var hits = PhyTools.OverlapBox(pos, halfExtents, Color.yellow).NotNull().ToList();
+            return hits.Count <= 0 || // Position is valid to move to if no colliders are found, or
                    // If none of the colliders are an obstacle
-                   hits.All(hit => !hit.transform.CompareTag("Obstacle"));
+                   hits.All(hit => hit.transform && !hit.transform.CompareTag("Obstacle"));
         }
 
         /// <summary> Add a node to the open list, whilst maintaining an ascending order of f </summary>

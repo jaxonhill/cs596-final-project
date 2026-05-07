@@ -1,45 +1,48 @@
 using UnityEngine;
 
-public class Attack : MonoBehaviour
+namespace Player
 {
-    public int attackDamage = 1;
-    public float attackRange = 1f;
-    public float attackCooldown = 2f;
-    public LayerMask targetLayer;
-
-    private float nextAttackTime;
-
-    public void TryAttack()
+    public class Attack : MonoBehaviour
     {
-        if (Time.time < nextAttackTime)
-        {
-            return;
-        }
+        public int attackDamage = 1;
+        public float attackRange = 1f;
+        public float attackCooldown = 2f;
+        public LayerMask targetLayer;
 
-        Collider[] hits = Physics.OverlapSphere(transform.position + transform.forward, attackRange, targetLayer);
+        private float nextAttackTime;
 
-        foreach (Collider hit in hits)
+        public void TryAttack()
         {
-            Health health = hit.GetComponent<Health>();
-            if (health != null)
+            if (Time.time < nextAttackTime)
             {
-                health.DamageTaken(attackDamage);
+                return;
             }
+
+            Collider[] hits = Physics.OverlapSphere(transform.position + transform.forward, attackRange, targetLayer);
+
+            foreach (Collider hit in hits)
+            {
+                Health health = hit.GetComponent<Health>();
+                if (health != null)
+                {
+                    health.DamageTaken(attackDamage);
+                }
+            }
+
+            nextAttackTime = Time.time + attackCooldown;
         }
 
-        nextAttackTime = Time.time + attackCooldown;
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
-    }
-
-    void Update()
-    {
-        if (CompareTag("Player") && Input.GetKeyDown(KeyCode.Space))
+        void OnDrawGizmosSelected()
         {
-            TryAttack();
+            Gizmos.DrawWireSphere(transform.position + transform.forward, attackRange);
+        }
+
+        void Update()
+        {
+            if (CompareTag("Player") && Input.GetKeyDown(KeyCode.Space))
+            {
+                TryAttack();
+            }
         }
     }
 }

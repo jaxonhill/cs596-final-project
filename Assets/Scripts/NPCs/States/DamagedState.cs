@@ -1,32 +1,38 @@
+using Components;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace NPCs.States
 {
     public class DamagedState : NPCState
     {
+        // HEADER: CONSTRUCTOR
         
-        public DamagedState(NPC new_npc) { npc = new_npc; }
+        public DamagedState(NPC npc) : base(npc) {}
 
+        
+        // HEADER: STATE METHODS
+        
         // ReSharper disable Unity.PerformanceAnalysis
-        public override async void Enter()
-        {
-            if (npc.GetHealth() <= 0)
-            {
-                npc.ChangeToState(NPCStateEnum.Death);
-            }
-            npc.SetMovementSpeed(0);
-            await UniTask.Delay(npc.GetIFrames());
-            if (npc.GetTarget() != null)
-            {
-                npc.ChangeToState(NPCStateEnum.Chasing);
-                return;
-            }
-            npc.ChangeToState(NPCStateEnum.Idle);
+        public override async UniTask Enter() {
+            
+            // If HP reaches 0, die
+            if (health.GetValue() <= 0) { _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Death); return; }
+
+            movement.Stop(); // Stun the NPC temporarily
+            
+            await npc.AwaitAnimationTrigger("Damage");
+            
+            // If the NPC's target still lives, return to Chasing State
+            if (npc.target != null) { _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Chasing); return; }
+            
+            // Otherwise, return to Idle State
+            _ = stateMachine.ChangeToState(NPCStateEnum.Damaged, NPCStateEnum.Idle);
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }
 
-        public override void Exit()
-        { }
+        public override UniTask Exit()
+        { return UniTask.CompletedTask; }
     }
 }

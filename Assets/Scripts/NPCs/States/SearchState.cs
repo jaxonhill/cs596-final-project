@@ -1,92 +1,1 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
-using NPCs.Enemies;
-using Unity.VisualScripting;
-using UnityEngine;
-
-namespace NPCs.States
-{
-    public class SearchState : NPCState
-    {
-        /* * * * * * * * * *
-         * Search Components  *
-         * * * * * * * * * */
-        private Transform target => enemy.GetTarget();
-        /// <summary> The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)</summary>
-        private Stack<Vector3> curPath;
-
-        private Vector3 secondTarget;
-        
-        /* * * * * * * * * *
-         * NPC Components  *
-         * * * * * * * * * */
-        private readonly BaseEnemy enemy;
-
-        private bool secondSearch = false;
-        private bool startSearch = true;
-        
-        public SearchState(BaseEnemy new_enemy) { enemy = new_enemy; }
-        
-        public override async void Enter()
-        {
-            curPath = AStarSearch.Search(enemy.transform, target.position);
-            enemy.SetTargetPos(curPath.Pop());
-            await UniTask.Delay(1500);
-            secondTarget = target.position;
-        }
-
-        public override async UniTask Run()
-        {
-            if (TargetInView())
-            {
-                enemy.ChangeToState(NPCStateEnum.Chasing);
-            }
-            if (!startSearch) return;
-            await Search();
-        }
-
-        public override void Exit()
-        {
-            
-        }
-        
-        // ReSharper disable Unity.PerformanceAnalysis
-        /// <summary> Implementation for making an Enemy follow a given path </summary>
-        private async Task Search()
-        {
-            // If the enemy has not yet reached the target position, move towards it
-            if (!enemy.AtDestination()) { enemy.MoveTowardsDestination(); }
-            
-            // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position
-            else if (!NoPath()){ enemy.SetTargetPos(curPath.Pop()); /* Pop the next target position from the current path */ }
-            
-            // If the Stack is empty, 
-            else
-            {
-                if (!secondSearch)
-                {
-                    startSearch = false;
-                    await UniTask.WaitUntil(() => !secondTarget.IsUnityNull());
-                    secondSearch = true;
-                    curPath = AStarSearch.Search(enemy.transform, secondTarget);
-                    enemy.SetTargetPos(curPath.Pop());
-                    startSearch = true;
-                    return;
-                }
-                await UniTask.Delay(1000);
-                enemy.ChangeToState(NPCStateEnum.Idle);
-            }
-        }
-        
-        /// <summary> Returns true if the enemy doesn't have a path / curPath is empty </summary>
-        private bool NoPath() { return curPath.Count == 0; }
-        
-        private bool TargetInView()
-        {
-            var target_in_front = enemy.InFront(target.position);
-            Physics.Raycast(enemy.GetPosition(), enemy.GetDirection(target.position), out var hit, enemy.GetDetectionRange());
-            return target_in_front && hit.transform && hit.transform == target;
-        }
-    }
-}
+using System.Collections.Generic;using System.Threading.Tasks;using Cysharp.Threading.Tasks;using NPCs.Enemies;using Unity.VisualScripting;using UnityEngine;namespace NPCs.States{    public class SearchState : NPCState    {        /* * * * * * * * * *         * NPC Components  *         * * * * * * * * * */        /// The primary script for enemies: <see cref="BaseEnemy">BaseEnemy</see>        private readonly BaseEnemy enemy;                        /* * * * * * * * * * *         * Search Components *         * * * * * * * * * * */        /// The entity this enemy is searching for         private Transform target => enemy.target;                /// The current path from the Start Node to the Goal Node (from Top to Bottom of the stack)        private Stack<Vector3> curPath;                /// The second location to search for a lost target         private Vector3 secondDestination;        /// The delay between marking the first and second search locations        private const int searchDelay = 2500;                /// Whether the entity is searching the second search location        private bool onSecondSearch;                        // HEADER: CONSTRUCTOR        public SearchState(BaseEnemy new_enemy) : base(new_enemy) { enemy = new_enemy; }                        // HEADER: STATE METHODS        // ReSharper disable Unity.PerformanceAnalysis        public override UniTask Enter()        {            // Create a path to the last known location of the target            curPath = AStarSearch.Search(enemy.transform, target.position);            if(curPath.IsUnityNull()){ _ = stateMachine.ChangeToState(NPCStateEnum.Searching, NPCStateEnum.Idle);                 return UniTask.CompletedTask;}                        // Start moving the enemy through the path            if (curPath != null) movement.SetDestination(curPath.Pop());                        movement.SetValue(movement.defaultSpeed + 3);                        // After a delay, mark the second location              _ = SetSecondDestination();            return UniTask.CompletedTask;        }        public override async UniTask Run() {            // If the enemy is found, return to a Chase State            if (npc.TargetInSight()) { _ = stateMachine.ChangeToState(NPCStateEnum.Searching, NPCStateEnum.Chasing); return; }                        // If Search execution is paused, return, otherwise do Search for Target            if (pause) return; await Search();        }        public override UniTask Exit() {return UniTask.CompletedTask;}                        // HEADER: SEARCH METHODS                // ReSharper disable Unity.PerformanceAnalysis        /// Implementation for making an Enemy follow a given path         private async Task Search()        {            // If the enemy has not yet reached the target position, move towards it            if (!movement.AtDestination())            {                enemy.SetAnimationBool("Chase", true);                movement.MoveTowardsDestination();            }                        // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position            else if (!NoPath()){ movement.SetDestination(curPath.Pop()); }                        // If the Stack is empty,             else            {                if (!onSecondSearch) { // If not yet searching the second location                    onSecondSearch = true;                                        await InvokeWithWaitUntil(() => {}, () => secondDestination != Vector3.zero);                                        curPath = AStarSearch.Search(enemy.transform, secondDestination);                                        // If a valid path is not found, set the NPC back to idle                    if(NoPath()){ _ = stateMachine.ChangeToState(NPCStateEnum.Searching, NPCStateEnum.Idle); return;}                                        // Otherwise, move down the path                    movement.SetDestination(curPath.Pop());                }                                // Once both search locations have been checked, and target is not found, return to Idle State                enemy.SetAnimationBool("Chase", false);                await UniTask.Delay(searchDelay); // Delay before returning to idle state                _ = stateMachine.ChangeToState(NPCStateEnum.Searching, NPCStateEnum.Idle);             }        }                // HEADER: HELPER METHODS                /// <summary> Returns true if the enemy doesn't have a path / curPath is empty </summary>        private bool NoPath() { return curPath.IsUnityNull() || curPath.Count == 0; }        private async UniTask SetSecondDestination()        {            await UniTask.Delay(2500);            secondDestination = target.position;        }    }}

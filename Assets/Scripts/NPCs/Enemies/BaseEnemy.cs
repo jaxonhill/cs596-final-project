@@ -1,53 +1,71 @@
+using System.Collections.Generic;
+using Combat;
+using GameManaging;
 using NPCs.States;
-using NPCs.States.Chase;
-using NPCs.States.Idle;
-using static NPCs.States.NPCState;
+using NPCs.States.StateMachines;
+using TriInspector;
 using UnityEngine;
+
 
 namespace NPCs.Enemies 
 {
     /// <summary> The abstract class for defining enemies </summary>
+    [RequireComponent(typeof(EnemyStateMachine))]
     public abstract class BaseEnemy : NPC
     {
-        /// <summary> Object used for storing information on an enemy's patrolling </summary>
-        [SerializeField] private PatrolObject patrolObject = new();
-        
-        /// <summary> The state the enemy is in when not attacking/chasing/etc </summary>
-        private SearchState searchState;
-        
-        [SerializeField] private GameObject player;
-        
-        
-        // Create a new patrol state for this enemy, and set its NPC Idle State to this patrol state. Then do normal NPC Start() implementation
-        protected new void Start() {
-            PatrolState patrolState = new (this);
-            idleState = patrolState;
-            EnemyChaseState eChaseState = new(this);
-            chaseState = eChaseState;
-            searchState = new(this);
-            
-            GlobalGameManager.AddEnemy(transform);
-            base.Start(); }
-        
-        public new void ChangeToState(NPCStateEnum newState)
+        /* * * * * * * *
+         * Patrolling *
+         * * * * * * * */
+        // Method specifically used for the Dropdown attribute of patrolType (Creates dropdown list functionality in the inspector)
+        private IEnumerable<TriDropdownItem<int>> GetPatrolTypeEnum()
         {
-            if (newState == NPCStateEnum.Searching)
-            {
-                state.Exit();
-                state = searchState;
-                state.Enter();
-            }
-            else
-            {
-                base.ChangeToState(newState);
-            }
-            
+            return new TriDropdownList<int> {
+                {"Random", 0},
+                {"Ordered", 1},
+                {"Free", 2}, };
         }
         
-        // HEADER: GET Methods
+        [Title("Patrolling")] 
         
-        /// <summary> Return the Patrol Object for this enemy </summary>
-        public PatrolObject GetPatrolObject() { return patrolObject; }
+        [Tooltip("The patrolling type the enemy uses: Ordered, Random, or Free"), Dropdown(nameof(GetPatrolTypeEnum)), SerializeField]
+        private int patrolType;
+        
+        [Tooltip("List of transforms representing the positions that enemies will move to when not chasing the player"), SerializeField] 
+        private List<Transform> patrolMarkers;
+        
+        [Tooltip("How long an enemy should remain at a patrol marker before proceeding to the next"), SerializeField]
+        private int patrolDelay;
+        
+        
+        [Title("Searching")] 
+        
+        [Tooltip("Whether the enemy will search for a lost player (Melee), or return to idle (Range)"), SerializeField] 
+        protected bool willSearch;
+        
+        
+        // HEADER: STANDARD METHODS
+        
+        // Add this enemy to the GlobalGameManager Enemy List
+        protected void Start() { GlobalGameManager.AddEnemy(transform); }
+
+
+        // HEADER: GETTERS
+        
+        public int GetPatrolType(){ return patrolType;}
+        
+        public List<Transform> GetPatrolMarkers(){ return patrolMarkers;}
+        
+        public int GetPatrolDelay(){return patrolDelay;}
+        
+        public bool GetWillSearch(){return willSearch;}
+        
+        // HEADER: DAMAGED
+
+        private void OnTriggerEnter(Collider collision)
+        {
+            if (!collision.transform.TryGetComponent<AttackHitbox>(out var hitbox)) return;
+            if (stateMachine.currentState is DamagedState or DieState) return;
+            health.OnDamaged(hitbox.Damage);
+        }
     }
-    
 }

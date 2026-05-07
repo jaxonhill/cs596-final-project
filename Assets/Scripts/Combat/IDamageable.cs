@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IDamageable
+namespace Combat
 {
-    bool IsDamageable { get; }
-    void TakeDamage(int amount, GameObject source);
+    public interface IDamageable
+    {
+        bool IsDamageable { get; }
+        void TakeDamage(int amount, GameObject source);
+    }
 }

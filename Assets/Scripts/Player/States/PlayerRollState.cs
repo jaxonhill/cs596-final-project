@@ -1,51 +1,54 @@
 using UnityEngine;
 
-public class PlayerRollState : PlayerBaseState
+namespace Player.States
 {
-    public PlayerRollState(PlayerStateMachine currentContext) : base(currentContext)
+    public class PlayerRollState : PlayerBaseState
     {
-    }
-
-    public override void EnterState()
-    {
-        PlayerAnimation rollAnimation = player.PlayerMotor.GetClosestRollAnimation(player.PlayerInput.MoveInput);
-        player.PlayerMotor.BeginRoll(player.PlayerInput.MoveInput);
-        player.PlayerAnimator.Play(rollAnimation);
-
-        if (player.PlayerDamageable != null)
+        public PlayerRollState(PlayerStateMachine currentContext) : base(currentContext)
         {
-            player.PlayerDamageable.SetStateInvincible(true);
-            Debug.Log("[State] ROLL started — invincibility ON", player);
-        }
-    }
-
-    public override void UpdateState()
-    {
-        player.PlayerMotor.ApplyRollMovement();
-    }
-
-    public override void ExitState()
-    {
-        if (player.PlayerDamageable != null)
-        {
-            player.PlayerDamageable.SetStateInvincible(false);
-            Debug.Log("[State] ROLL ended — invincibility OFF", player);
-        }
-    }
-
-    public override void CheckSwitchStates()
-    {
-        if (!player.PlayerMotor.IsRollFinished)
-        {
-            return;
         }
 
-        if (!player.PlayerMotor.IsGrounded)
+        public override void EnterState()
         {
-            player.SwitchState(player.FallState);
-            return;
+            PlayerAnimation rollAnimation = player.PlayerMotor.GetClosestRollAnimation(player.PlayerInput.MoveInput);
+            player.PlayerMotor.BeginRoll(player.PlayerInput.MoveInput);
+            player.PlayerAnimator.Play(rollAnimation);
+
+            if (player.PlayerDamageable != null)
+            {
+                player.PlayerDamageable.SetStateInvincible(true);
+                Debug.Log("[State] ROLL started — invincibility ON", player);
+            }
         }
 
-        player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        public override void UpdateState()
+        {
+            player.PlayerMotor.ApplyRollMovement();
+        }
+
+        public override void ExitState()
+        {
+            if (player.PlayerDamageable != null)
+            {
+                player.PlayerDamageable.SetStateInvincible(false);
+                Debug.Log("[State] ROLL ended — invincibility OFF", player);
+            }
+        }
+
+        public override void CheckSwitchStates()
+        {
+            if (!player.PlayerMotor.IsRollFinished)
+            {
+                return;
+            }
+
+            if (!player.PlayerMotor.IsGrounded)
+            {
+                player.SwitchState(player.FallState);
+                return;
+            }
+
+            player.SwitchState(player.PlayerInput.IsTryingToMove ? player.MoveState : player.IdleState);
+        }
     }
 }

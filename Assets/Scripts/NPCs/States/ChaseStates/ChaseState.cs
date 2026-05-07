@@ -8,12 +8,6 @@ namespace NPCs.States.ChaseStates
     /// State an NPC enters when a target has been found. They will attempt to chase the target until they are in range for an attack, or the target is lost
     public abstract class ChaseState : NPCState
     {
-        /* * * * * * * * * *
-         * NPC Components  *
-         * * * * * * * * * */
-        private Vector3 position => npc.transform.position;
-        
-        
         /* * * * * * * * * * *
          * Target Components *
          * * * * * * * * * * */
@@ -27,15 +21,18 @@ namespace NPCs.States.ChaseStates
         // HEADER: STATE METHODS
         
         // Set Default Values
-        // ReSharper disable Unity.PerformanceAnalysis
-        public override UniTask Enter()
-        {
-            target = npc.Target; // Initialize the NPC's target
-            movement.SetValue(movement.DefaultSpeed + 10); // Speed in this state is set to 20
+        public override UniTask Enter() {
+            // Initialize Values
+            target = npc.target; 
+            movement.SetValue(movement.defaultSpeed + 5); 
+            
+            // Animate
+            npc.SetAnimationBool("Chase", true);
             
             return UniTask.CompletedTask;
         }
 
+        // Follow the target, check if they are still in sight and if they are in range for an attack
         public override async UniTask Run()
         {
             FollowTarget(); // NPC will follow their target
@@ -45,10 +42,14 @@ namespace NPCs.States.ChaseStates
             // If NPC is in range of their target, do an attack
             if (!CheckIfInRange()) return;
             
-            await stateMachine.ChangeToState(NPCStateEnum.Attacking);
+            _ = stateMachine.ChangeToState(NPCStateEnum.Attacking); 
         }
 
-        public override UniTask Exit() { return UniTask.CompletedTask; }
+        public override UniTask Exit()
+        {
+            npc.SetAnimationBool("Chase", false);
+            return UniTask.CompletedTask;
+        }
 
         
         // HEADER: CHASE METHODS
@@ -57,10 +58,11 @@ namespace NPCs.States.ChaseStates
         protected virtual void FollowTarget() {  movement.MoveTowardsLocation(target.position); }
 
         /// Check to see if the target is close enough to attack the target
-        protected virtual bool CheckIfInRange() { return movement.WithinLocation(attack.GetRange() + target.localScale.magnitude/2 ,target.position); }
+        protected virtual bool CheckIfInRange() {
+            return movement.WithinLocation(attack.GetRange() + target.localScale.magnitude/2 ,target.position); }
         
-        protected virtual bool CheckIfInSight() {
-            return PhyTools.RaycastForTransform(position, movement.GetDirection(target.position), detection.GetActiveValue(), target, Color.blue); }
+        protected virtual bool CheckIfInSight()
+        { return detection.TransformInView(target); }
 
         /// What the NPC should do if they lose a target
         protected abstract void IfLost();

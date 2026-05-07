@@ -12,7 +12,7 @@ namespace GameManaging
         private static void Start()
         {
             settingsObject = Resources.Load<GameSettingsObject>("GameSettingsObject");
-            Debug = settingsObject.GetDebug();
+            Debug = settingsObject.Debug;
         }
     }
 }

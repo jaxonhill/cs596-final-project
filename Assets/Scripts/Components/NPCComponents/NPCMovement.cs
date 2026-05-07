@@ -24,11 +24,6 @@ namespace Components.NPCComponents
         
         /// Move the NPC gradually towards their destination
         public void MoveTowardsDestination() { MoveTowardsLocation(destination); }
-
-        public void MoveWithinDestination()
-        {
-            
-        }
         
         /// Returns true if an NPC is within 1 unit of their given destination 
         public bool AtDestination(){return AtLocation(destination);}

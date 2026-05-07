@@ -1,5 +1,3 @@
-using NPCs;
-using NPCs.States;
 using TriInspector;
 using UnityEngine;
 
@@ -22,7 +20,7 @@ namespace Components
         private int maxHealth = 3;
 
         [Tooltip("The amount of frames this entity is invincible for"), SerializeField]
-        private float iFrames = 1500;
+        private int iFrames = 1500;
 
         /// Whether this entity is currently invincible
         private bool isInvincible;
@@ -37,7 +35,7 @@ namespace Components
         
         public void SetMaxHealth(int value){maxHealth = value;}
         
-        public float GetIFrames(){return iFrames;}
+        public int GetIFrames(){return iFrames;}
         
         public bool IsInvincible(){return isInvincible;}
         
@@ -46,19 +44,10 @@ namespace Components
         
         // HEADER: EXTRA MODIFIERS
         
-        /// Increase health by 1
-        public void IncrementHealth(){health++;}
-    
-        /// Increase health by 1
-        public void DecrementHealth(){health--;}
-        
         /// Raise Health by the given amount
         public void RaiseHealth(int value){health += value;}
 
-        public void LowerHealth(int value)
-        {
-            health -= value;
-        }
+        public void LowerHealth(int value) { health -= value; }
 
         public virtual void OnDamaged(int value, bool ignoreIFrames = false)
         {

@@ -13,13 +13,10 @@ namespace NPCs.States.StateMachines
     [HideMonoScript]
     public abstract class NPCStateMachine : MonoBehaviour
     {
-        
-        
-        
         /* * * * * * * * * * 
          * Constant Fields *
          * * * * * * * * * */
-        private readonly NPC npc;
+        protected NPC npc;
 
         
         /* * * * * * * * *
@@ -27,16 +24,17 @@ namespace NPCs.States.StateMachines
          * * * * * * * * */
         public NPCState currentState { get; protected set; }
         private bool awaitingRun;
+        private bool stop;
 
         
-        // HEADER: CONSTRUCTOR
-        
-        protected NPCStateMachine(NPC new_npc) { npc = new_npc; }
+        // HEADER: AWAKE
+
+        protected void Awake() { npc = gameObject.GetComponent<NPC>(); }
 
         
         // HEADER: START
 
-        private void Start() { _ = ChangeToState(NPCStateEnum.Idle); }
+        protected virtual void Start() { _ = ChangeToState(NPCStateEnum.Idle); }
         
         
         // HEADER: RUN METHODS
@@ -47,7 +45,7 @@ namespace NPCs.States.StateMachines
         private void Continue()  {awaitingRun = false; }
         
         // Do State.Run() every update
-        protected virtual void Update() { if(!awaitingRun) Run(); }
+        protected virtual void FixedUpdate() { if(!awaitingRun && !stop) Run(); }
 
         /// Stop Update() execution until the Run() of the current state has completed
         private async void Run()
@@ -58,15 +56,36 @@ namespace NPCs.States.StateMachines
         
         
         // HEADER: STATE MANAGEMENT
-        
+        // ReSharper disable Unity.PerformanceAnalysis
         /// Exit old state, change to new state, enter new state
-        public virtual async UniTask ChangeToState(NPCStateEnum state) {
+        public async UniTask ChangeToState(NPCStateEnum state)
+        {
+
+            if (awaitingRun) await UniTask.WaitUntil(() => !awaitingRun);
+            
+            // Stop the current running state
+            stop = true;
             
             // Exit the previous state
-            currentState?.Exit();
+            if(currentState != null){ await currentState.Exit();}
+            
             currentState = null;
             
             // Change to the new state
+            await SetState(state);
+
+            // Enter the new state
+            if(currentState != null)  { await currentState.Enter(); }
+
+            // Resume state running
+            stop = false;
+            
+            print(state);
+        }
+
+        /// Set the current state based on the give state enum (can be overrided to add more options in subclasses)
+        protected virtual async UniTask SetState(NPCStateEnum state)
+        {
             switch (state) {
                 case NPCStateEnum.Idle: await ChangeToIdleState(); break;
                 case NPCStateEnum.Chasing: await ChangeToChaseState(); break;
@@ -75,9 +94,6 @@ namespace NPCs.States.StateMachines
                 case NPCStateEnum.Death: await ChangeToDyingState(); break;
                 default: throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
-
-            // Enter the new state
-            currentState?.Enter(); ;
         }
 
         /// Change to an <see cref="IdleState">Idle State</see>

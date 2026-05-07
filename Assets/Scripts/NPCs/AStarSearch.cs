@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameManaging;
+using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
 using Vertx.Debugging;
@@ -35,7 +36,7 @@ namespace NPCs
         }
 
         /// <summary> Use A* Search to find a path between a Starting and Goal position </summary>
-        public static Stack<Vector3> Search(Transform entity, Vector3 goal, int threshold = 1)
+        public static Stack<Vector3> Search(Transform entity, Vector3 goal, float threshold = 1)
         {
             //HEADER: __Initializations__ 
             
@@ -128,10 +129,10 @@ namespace NPCs
             
             // Get all the colliders at this position
             // ReSharper disable once Unity.PreferNonAllocApi
-            var hits = PhyTools.OverlapBox(pos, halfExtents, Color.yellow);
-            return hits.Length <= 0 || // Position is valid to move to if no colliders are found, or
+            var hits = PhyTools.OverlapBox(pos, halfExtents, Color.yellow).NotNull().ToList();
+            return hits.Count <= 0 || // Position is valid to move to if no colliders are found, or
                    // If none of the colliders are an obstacle
-                   hits.All(hit => !hit.transform.CompareTag("Obstacle"));
+                   hits.All(hit => hit.transform && !hit.transform.CompareTag("Obstacle"));
         }
 
         /// <summary> Add a node to the open list, whilst maintaining an ascending order of f </summary>

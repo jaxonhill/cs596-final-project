@@ -3,6 +3,7 @@ using Components;
 using Components.NPCComponents;
 using Cysharp.Threading.Tasks;
 using NPCs.States.StateMachines;
+using UnityEngine;
 
 namespace NPCs.States
 {
@@ -13,6 +14,7 @@ namespace NPCs.States
          * NPC Components *
          * * * * * * * * */
         protected readonly NPC npc;
+        protected Vector3 position => npc.position;
         protected NPCStateMachine stateMachine => npc.stateMachine;
         protected NPCHealth health => npc.health;
         protected NPCMovement movement => npc.movement;
@@ -23,6 +25,10 @@ namespace NPCs.States
         /// Whether some (or all) of Run() execution should be paused 
         protected bool pause;
 
+        
+        /* * * * *
+         * Enums *
+         * * * * */
         /// Enum representing which state the NPC is in <br></br>
         /// [ <see cref="NPCStateEnum.Idle">Idle</see>,
         /// <see cref="NPCStateEnum.Chasing">Chasing</see>,
@@ -65,7 +71,9 @@ namespace NPCs.States
         public abstract UniTask Exit();
         
 
+        // HEADER: PAUSE FUNCTIONS
         // ReSharper disable Unity.PerformanceAnalysis
+        /// Enable Pause, and run the given function after a given delay
         public virtual async UniTask InvokeWithPause(Action func, int delay)
         {
             pause = true;
@@ -74,6 +82,7 @@ namespace NPCs.States
             pause = false;
         }
 
+        /// Enable Pause, and run the given function repeatedly until a condition is met 
         public virtual async UniTask InvokeWithWaitUntil(Action func, Func<bool> conditional)
         {
             pause = true;

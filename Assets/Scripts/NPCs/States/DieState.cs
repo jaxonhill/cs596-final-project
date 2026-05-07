@@ -1,5 +1,6 @@
 using Components;
 using Cysharp.Threading.Tasks;
+using GameManaging;
 using NPCs.Enemies;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace NPCs.States
         public override async UniTask Enter()
         {
             movement.SetValue(0);
-            await npc.SetAnimationTrigger("Death");
+            //await npc.SetAnimationTrigger("Death");
             GlobalGameManager.RemoveEnemy(npc.transform);
             await UniTask.Delay(1000); Exit();
         }

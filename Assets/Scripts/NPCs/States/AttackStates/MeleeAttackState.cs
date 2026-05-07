@@ -2,22 +2,29 @@ using System.Collections.Generic;
 using System.Linq;
 using Components;
 using Cysharp.Threading.Tasks;
+using GameManaging;
 using NPCs.Enemies;
+using Tools;
 using UnityEngine;
 
 namespace NPCs.States.AttackStates
 {
-    public class MeleeAttackState : AttackState {
-        public MeleeAttackState(MeleeEnemy enemy) : base(enemy) {}
+    public class MeleeAttackState : AttackState
+    {
         
-        /* * * * * * *
-         * Attacking *
-         * * * * * * */
+        /* * * * * * * * * 
+         * Runtime Fields *
+         * * * * * * * * */
         /// The NPC is in the middle of a melee attack (Like a sword swing)
         private bool attacking;
+        /// The transforms that were hit during an attack
         private List<Transform> hits;
+        /// Helps determine the size of the attack hitbox 
         private Vector3 halfExtents;
 
+        
+        // HEADER: CONSTRUCTOR 
+        public MeleeAttackState(NPC npc) : base(npc) {}
 
         public override UniTask Run()
         {
@@ -29,20 +36,12 @@ namespace NPCs.States.AttackStates
         {
             // Some initializations 
             hits = new List<Transform>();
-            halfExtents = transform.localScale / 2;
+            halfExtents = npc.transform.localScale / 2; // Attack hitbox will be the size of the attacker
             
-            // Enemy is swinging their sword
+            // Enemy is swinging their sword./l;
             attacking = true;
-            await npc.SetAnimationInt("Attack", Random.Range(1,3));
-            
+            await npc.SetAnimationIntTrigger("Attack", Random.Range(1,3));
             attacking = false;
-            
-            // Get all entities that were hit in the swing
-            foreach (var hit in hits.Where(hit => hit && GlobalGameManager.GetTargetTags(transform).Contains(hit.tag)))
-            {
-                var health = hit.GetComponent<Health>();
-                health.LowerHealth(attack.GetValue());
-            }
         }
 
         private void SwingAttack()
@@ -50,7 +49,21 @@ namespace NPCs.States.AttackStates
             // Use a Boxcast to determine who's in the attack range
             var new_hits = PhyTools.BoxCastAll(position, halfExtents,
                 npc.transform.forward, Quaternion.identity, attack.GetRange(), Color.blue);
-            foreach (var hit in new_hits.Where(hit => !hits.Contains(hit))) { hits.Add(hit); }
+            Health health;
+            foreach (var hit in new_hits.Where(hit => !hits.Contains(hit)))
+            {
+                health = hit.GetComponent<Health>();
+                health.LowerHealth(attack.GetValue());
+                hits.Add(hit);
+            }
+        }
+        
+        // HEADER: HELPER METHODS
+
+        private bool ValidTarget(Transform hit)
+        {
+            return hit // Hit is not null
+                   && GlobalGameManager.GetTargetTags(npc.transform).Contains(hit.tag); // Hit transform is an enemy of this NPC
         }
     }
 }

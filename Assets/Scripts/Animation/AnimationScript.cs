@@ -1,5 +1,6 @@
 using NPCs;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AnimationScript : StateMachineBehaviour
 {
@@ -7,46 +8,35 @@ public class AnimationScript : StateMachineBehaviour
     public enum AnimationStateEnum
     {
         None = -1,
-        Idle = 0,
-        Walking = 1,
-        Screaming = 2,
-        Chasing = 3,
-        Attacking = 4,
-        Damaged = 5,
-        Dying = 6
+        Screaming = 0,
+        Attacking = 1,
+        Damaged = 2,
+        Dying = 3
     }
     
     protected NPC NPC(Animator animator){return animator.transform.GetComponent<NPC>();}
 
-    /*protected AnimationStateEnum currentState = AnimationStateEnum.Idle;*/
-
-    protected AnimationStateEnum GetAnimationEnum(string name)
+    public UnityEvent<AnimationStateEnum> AnimationStop;
+    
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        switch (name)
-        {
-            case "Idle":
-                return AnimationStateEnum.Idle;
-                break;
-            case "Walking":
-                return AnimationStateEnum.Walking;
-                break;
-            case "Screaming":
-                return AnimationStateEnum.Screaming;
-                break;
-            case "Chasing":
-                return AnimationStateEnum.Chasing;
-                break;
-            case "Attack1" or "Attack2" or "Attack3":
-                return AnimationStateEnum.Attacking;
-                break;
-            case "Damaged":
-                return AnimationStateEnum.Damaged;
-                break;
-            case "Dying":
-                return AnimationStateEnum.Dying;
-                break;
-        }
+        
+    }
 
-        return AnimationStateEnum.None;
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        
+    }
+
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        var npcScript = animator.GetComponent<NPC>();
+        AnimationStop.AddListener(npcScript.AnimationFinished);
+        if (stateInfo.IsName("Screaming")) { AnimationStop.Invoke(AnimationStateEnum.Screaming); }
+        else if (stateInfo.IsName("Attack1") || stateInfo.IsName("Attack2") || stateInfo.IsName("Attack3"))
+        {AnimationStop.Invoke(AnimationStateEnum.Attacking);}
+        else if (stateInfo.IsName("Damaged")) {AnimationStop.Invoke(AnimationStateEnum.Damaged);}
+        else if (stateInfo.IsName("Dying")) {AnimationStop.Invoke(AnimationStateEnum.Dying);}
+        AnimationStop.RemoveListener(npcScript.AnimationFinished);
     }
 }

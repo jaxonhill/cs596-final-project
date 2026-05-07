@@ -17,21 +17,25 @@ namespace Components
             get => val;
             set => val = value; }
 
-        private int defaultSpeed;
-        public int DefaultSpeed => defaultSpeed;
-        
-        private Vector3 position => transform.position;
+        public int defaultSpeed { get; private set; }
         
         /// The forward direction of this entity
         private Vector3 forward => transform.forward;
 
         /// The rigidbody of this entity
         private Rigidbody rb => transform.GetComponent<Rigidbody>();
+
+        private new Vector3 position => transform.position;
+        private new Vector3 center_position => base.position;
         
         
         // HEADER: CONSTRUCTOR
 
-        public void Awake() { defaultSpeed = val; }
+        public new void Awake()
+        {
+            defaultSpeed = val;
+            base.Awake();
+        }
             
         
         // HEADER: EXTRA MODIFIERS
@@ -47,12 +51,16 @@ namespace Components
         
         
         // HEADER: POSITION LOGIC
-        
+
+        private static Vector3 GetGroundedPosition(Vector3 pos) { return new Vector3(pos.x, 0, pos.z); }
+        private Vector3 gPos => GetGroundedPosition(position);
+
         /// Returns true if an NPC is within a certain distance from a coordinate 
-        public bool WithinLocation(float distance, Vector3 location) { return Vector3.Distance(position, location) < distance; }
+        public bool WithinLocation(float distance, Vector3 location) {
+            return Vector3.Distance(gPos, GetGroundedPosition(location)) < distance; }
         
         /// Returns true if an NPC is within 1 unit from a coordinate 
-        public bool AtLocation(Vector3 location) { return WithinLocation(1, location); }
+        protected bool AtLocation(Vector3 location) { return WithinLocation(1, location); }
         
         
         // HEADER: MOVEMENT LOGIC
@@ -61,17 +69,30 @@ namespace Components
         public void MoveTowardsLocation(Vector3 location)
         {
             // Move gradually towards the new position
-            var new_pos = Vector3.MoveTowards(position, location, speed * Time.deltaTime);
+            var new_pos = Vector3.MoveTowards(
+                GetGroundedPosition(position), GetGroundedPosition(location), speed * Time.fixedDeltaTime);
+            
             // Conversely, turn instantly towards the direction of movement
-            var direction = Vector3.Normalize(new_pos - position);
-            var lookDir = direction == Vector3.zero ? Quaternion.identity : Quaternion.LookRotation(direction);
+            var direction = GetDirectionIgnoreY(new_pos);
+            var lookDir = direction == Vector3.zero ? transform.rotation : Quaternion.LookRotation(direction);
+            
             rb.Move(new_pos, lookDir);
         }
         
         
         // HEADER: DIRECTION LOGIC
         
-        public Vector3 GetDirection(Vector3 coordinate) { return Vector3.Normalize(coordinate - transform.position); }
+        /// Return the direction of this entity to the given coordinate
+        public Vector3 GetDirection(Vector3 coordinate) { return Vector3.Normalize(coordinate - position); }
+
+        public Vector3 GetDirectionIgnoreY(Vector3 coordinate) {
+            return Vector3.Normalize(GetGroundedPosition(coordinate) - gPos);
+        }
+
+        public Vector3 GetCenteredDirection(Vector3 coordinate)
+        {
+            return Vector3.Normalize(coordinate - center_position);
+        }
 
         /// Return whether the given coordinate is in front of the NPC
         public bool InFront(Vector3 coordinate) { return Vector3.Dot(forward, GetDirection(coordinate)) >= 0; }

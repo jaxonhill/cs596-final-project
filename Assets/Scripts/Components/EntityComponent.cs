@@ -15,8 +15,8 @@ namespace Components
         
         [PropertyTooltip("$mainTooltip"),
          SerializeField, LabelText("$mainValue")] protected int val;
-        
 
+        
         // HEADER: GETTERS / SETTERS
         
         /// Return the base value of this component
@@ -24,5 +24,14 @@ namespace Components
     
         /// Set the base value of this component
         public void SetValue(int new_val){val = new_val;}
+        
+        
+        // HEADER: COMPONENTS
+
+        protected Vector3 position => !npc ? transform.position : npc.position;
+        
+        protected NPC npc;
+
+        protected void Awake() { npc = GetComponent<NPC>(); }
     }
 }

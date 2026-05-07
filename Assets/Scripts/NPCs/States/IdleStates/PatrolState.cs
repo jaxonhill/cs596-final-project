@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Components.NPCComponents;
 using Cysharp.Threading.Tasks;
+using GameManaging;
 using NPCs.Enemies;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -42,21 +43,16 @@ namespace NPCs.States.IdleStates
          * * * * * * * * * * */
         /// The primary script for enemies: <see cref="BaseEnemy">BaseEnemy</see>
         private readonly BaseEnemy enemy;
-        private Vector3 position => enemy.transform.position;
-        /// Component that controls movement: <see cref="NPCMovement">NPCMovement</see>
-        private NPCMovement movement => (NPCMovement) enemy.movement;
-        /// Component that controls how NPCs detect enemies: <see cref="Detection">NPCMovement</see>
-        private Detection detection => enemy.detection;
         
         /* * * * * * * * * * *
          * Patrolling Fields *
          * * * * * * * * * * */
         /// Determines the type of patrolling an enemy should perform (Ordered, Random, or Free) <br/> See <see cref="PatrolType">PatrolType</see>
-        private readonly PatrolType patrolType;
+        private PatrolType patrolType;
         /// List of Empty Objects representing the coordinates of patrol destinations
-        private readonly List<Transform> patrolMarkers;
+        private List<Transform> patrolMarkers;
         /// How long an enemy should remain at a patrol marker before proceeding to the next
-        private int patrolDelay; // TODO: MAY NEED TO FIX
+        private int patrolDelay; 
         
         /* * * * * * * * * * * * * * * 
          * Patrolling Runtime Fields *
@@ -69,12 +65,7 @@ namespace NPCs.States.IdleStates
         
         // HEADER: CONSTRUCTOR
 
-        public PatrolState(BaseEnemy enemy) : base(enemy)
-        {
-            // INITIALIZE PATROL DATA
-            patrolType = (PatrolType)enemy.GetPatrolType();
-            patrolMarkers = enemy.GetPatrolMarkers();
-        }
+        public PatrolState(BaseEnemy this_enemy) : base(this_enemy) { enemy = this_enemy; }
 
         
         // HEADER: STATE METHODS
@@ -82,12 +73,16 @@ namespace NPCs.States.IdleStates
         // Do Animations & Set Default Values
         public override UniTask Enter()
         {
-            // TODO: FINISH ANIMATION STUFF
+            // INITIALIZE PATROL DATA
+            patrolType = (PatrolType)enemy.GetPatrolType();
+            patrolMarkers = enemy.GetPatrolMarkers();
+            patrolDelay = enemy.GetPatrolDelay();
+            
             enemy.SetAnimationTrigger("Idle");
             
             // SET DEFAULTS
             enemy.SetTarget(NO_TARGET);
-            movement.SetValue(movement.DefaultSpeed); 
+            movement.SetValue(movement.defaultSpeed); 
             patrolIndex = FIRST_MARKER; 
             SetNewPath(); // Create a path to the first marker
             
@@ -106,9 +101,10 @@ namespace NPCs.States.IdleStates
 
         // Do Exit Functionality and Exit Animations
         public override async UniTask Exit() {
-            movement.Stop();
-            // TODO: FIX ANIMATIONS
-            await enemy.SetAnimationTrigger("Chase", true);
+            npc.transform.rotation = Quaternion.LookRotation(
+                movement.GetDirectionIgnoreY(npc.target.position)); // Look at target before attacking
+            enemy.SetAnimationBool("Walk", false);
+            await enemy.AwaitAnimationTrigger("Scream");
         }
         
         
@@ -118,15 +114,21 @@ namespace NPCs.States.IdleStates
         private void Patrol()
         {
             // If the enemy has not yet reached the target position, move towards it
-            if (!movement.AtDestination()) { movement.MoveTowardsDestination(); }
+            if (!NoPath() && !movement.AtDestination())
+            {
+                enemy.SetAnimationBool("Walk", true);
+                movement.MoveTowardsDestination();
+            }
             
             // If the enemy has reached the target position, but the path has not been fully traversed, get the next target position
-            else if (!NoPath()){ movement.SetDestination(curPath.Pop()); }
+            else if (!NoPath())
+            {
+                movement.SetDestination(curPath.Pop());
+            }
 
             // If the Stack is empty, make a new path
             else { 
-                // TODO: FIX ANIMATIONS
-                enemy.SetAnimationTrigger("Idle");
+                enemy.SetAnimationBool("Walk", false);
                 
                 _ = InvokeWithPause(SetNewPath, patrolDelay);
             }
@@ -145,9 +147,9 @@ namespace NPCs.States.IdleStates
                 // If Patrol Type Ordered, increment the index so that the next destination is set for the next SetNextPath call
                 if(patrolType == PatrolType.Ordered) patrolIndex = IncrementIndex(patrolIndex, patrolMarkers); // Increment patrol index, loop back to 0 when list size is reached
             }
+
+            if (curPath == NO_PATH) return; // If no path was found, return
             else {  /*? Free Patrol implementation here*/ }
-            // TODO: FIX ANIMATIONS
-            enemy.SetAnimationTrigger("Walk");
             movement.SetDestination(curPath.Pop()); // Pop the first target position from the path stack
         }
 
@@ -155,9 +157,9 @@ namespace NPCs.States.IdleStates
         // HEADER: Enemy Detection
 
         /// Enemy changes to Chase State, and chases the given target 
-        private async void ChaseTarget(Transform target) {
+        private void ChaseTarget(Transform target) {
             enemy.SetTarget(target);
-            await stateMachine.ChangeToState(NPCStateEnum.Chasing);
+            _ =  stateMachine.ChangeToState(NPCStateEnum.Chasing);
         }
         
         /// Iterate through a list of visible enemies to determine which one is the closest (enemy will be set to target this one)
@@ -181,17 +183,12 @@ namespace NPCs.States.IdleStates
 
         /// Iterate through all potential enemies (as declared in the <see cref="GlobalGameManager">GlobalGameManager</see>)
         /// to see if any are in sight of this enemy
-        private List<Transform> GetFriendliesInView()
-        {
-            // Grab all friendlies in front of this enemy
-            var friendlies_in_front = enemy.Enemies.Where(friendly => movement.InFront(friendly.position));
+        private List<Transform> GetFriendliesInView() {
+            // Get all the "Friendlies" who this enemy has a direct line of sight to
+            var friendlies_in_sight = enemy.enemies.Where(friendly =>
+                detection.TransformInSight(friendly.transform)).ToList();
             
-            // From that list, Grab all enemies in view of the enemy (no obstructions)
-            var friendlies_in_view = friendlies_in_front.Where(friendly => 
-                PhyTools.RaycastForTag(position, movement.GetDirection(friendly.position), 
-                detection.GetValue(), new List<string>() {"Friendly", "Player"}, Color.red)).ToList();
-            
-            return friendlies_in_view;
+            return friendlies_in_sight;
         }
         
         

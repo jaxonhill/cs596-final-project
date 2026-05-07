@@ -1,60 +1,61 @@
 using Components;
 using Cysharp.Threading.Tasks;
+using NPCs.States.StateMachines;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace NPCs.States.AttackStates
 {
     public abstract class AttackState : NPCState
     {
-
-        /* * * * * * * * *
-         * NPC Components *
-         * * * * * * * * */
-        protected Vector3 position => npc.transform.position;
-        protected Transform transform;
-        
-        
         // HEADER: CONSTRUCTOR
 
         protected AttackState(NPC npc) : base(npc){}
         
         
         // HEADER: STATE METHODS
-        
-        // ReSharper disable Unity.PerformanceAnalysis
-        // ReSharper disable once AsyncVoidMethod
+        /* ReSharper disable Unity.PerformanceAnalysis
+        ReSharper disable once AsyncVoidMethod*/
         public override async UniTask Enter()
         {
-            transform = npc.transform;
-            
-            npc.transform.LookAt(npc.Target);
+            npc.transform.rotation = Quaternion.LookRotation(
+                movement.GetDirectionIgnoreY(npc.target.position)); // Look at target before attacking
 
-            movement.SetValue(0);
+            movement.Stop(); // Ensure the attacker cannot move
             
             await UniTask.Delay(attack.GetWindup()); // Wait for the Windup
             
-            _ = DoAttack();
+            await DoAttack();
             
             await UniTask.Delay(attack.GetCooldown()); // Wait for the cooldown
             
-            npc.SetAnimationTrigger("Idle");
-            
             // If the target is not dead or dying, go back to chasing them (which will change back to an attack state immediately if still in range)
-            if (npc.Target && stateMachine.currentState is not DieState) {
-                npc.SetAnimationTrigger("Re-Chase");
-                await stateMachine.ChangeToState(NPCStateEnum.Chasing); return; }
-            
+            if (TargetAlive() 
+                && CheckIfInRange()) {
+                _ = stateMachine.ChangeToState(NPCStateEnum.Attacking); return; }
+            if (CheckIfInRange()) {
+                _ = stateMachine.ChangeToState(NPCStateEnum.Chasing); return; }
             // Otherwise, the enemy goes back to being idle 
-            await stateMachine.ChangeToState(NPCStateEnum.Idle);
+            _ = stateMachine.ChangeToState(NPCStateEnum.Idle);
         }
 
         public override UniTask Run() { return UniTask.CompletedTask; }
 
-        public override UniTask Exit()
-        {
-            return UniTask.CompletedTask;
-        }
+        public override UniTask Exit() { return UniTask.CompletedTask; }
 
         protected abstract UniTask DoAttack();
+        
+        // HEADER: HELPER METHODS
+        
+        private bool CheckIfInRange() {
+            return movement.WithinLocation(attack.GetRange() + npc.target.localScale.magnitude/2 ,npc.target.position); }
+
+        private bool TargetAlive()
+        {
+            return !npc.target.IsUnityNull();
+            // TODO: Player does not have StateMachine currently, so the code below wont work
+            //var targetState = npc.target.GetComponent<NPCStateMachine>().currentState;
+            //return targetState is not DieState;
+        }
     }
 }

@@ -13,19 +13,23 @@ namespace NPCs.States.StateMachines
         /* * * * * * * * * *
          * Constant Fields *
          * * * * * * * * * */
-        private readonly BaseEnemy enemy;
+        private BaseEnemy enemy;
         
         
-        // HEADER: CONSTRUCTOR
-        
-        public EnemyStateMachine(BaseEnemy this_enemy) : base(this_enemy) { enemy = this_enemy; }
+        // HEADER: AWAKE
+
+        protected override void Start()
+        {
+            enemy = npc as BaseEnemy;
+            base.Start();
+        }
         
         
         // HEADER: STATE MANAGEMENT
 
-        public override async UniTask ChangeToState(NPCStateEnum state) {
-            if (state == NPCStateEnum.Searching){ await ChangeToSearchState(); return;}
-            await base.ChangeToState(state);
+        protected override async UniTask SetState(NPCStateEnum state) {
+            if (state == NPCStateEnum.Searching) { await ChangeToSearchState(); return; }
+            await base.SetState(state);
         }
         
         protected override UniTask ChangeToIdleState() {

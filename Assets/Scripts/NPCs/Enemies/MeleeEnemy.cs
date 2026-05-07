@@ -5,10 +5,5 @@ namespace NPCs.Enemies
 {
     /// <summary> Class used to define and instantiate Melee Enemies </summary>
     [HideMonoScript]
-    public class MeleeEnemy : BaseEnemy
-    {
-        private static readonly int Chase = Animator.StringToHash("Chase");
-
-        public MeleeEnemy() {  }
-    }
+    public class MeleeEnemy : BaseEnemy { }
 }

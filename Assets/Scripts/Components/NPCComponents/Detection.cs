@@ -1,3 +1,5 @@
+using NPCs;
+using Tools;
 using TriInspector;
 using UnityEngine;
 
@@ -18,7 +20,7 @@ namespace Components.NPCComponents
         
         [Tooltip("Detection range when an NPC is aware of the target (Not Idle)"), SerializeField] 
         private int activeDetectionRange = 25;
-
+        
         
         // HEADER: CONSTRUCTOR
         
@@ -29,5 +31,23 @@ namespace Components.NPCComponents
         
         /// See <see cref="activeDetectionRange">Active Detection Range</see>
         public int GetActiveValue() { return activeDetectionRange; }
+        
+        
+        // HEADER: COMPONENTS
+        
+        private NPCMovement movement => npc.movement;
+        
+        // HEADER: HELPER METHODS
+
+        /// Returns true if there is a direct line between this npc and the transform
+        public bool TransformInView(Transform target_transform) {
+            return PhyTools.RaycastForTransform(position, movement.GetCenteredDirection(target_transform.position),GetActiveValue(), 
+                target_transform, Color.blue );
+        }
+        
+        /// Returns true if there is a direct <b>line of sight</b> between this NPC and the transform
+        public bool TransformInSight(Transform target_transform) {
+            return movement.InFront(target_transform.position) && TransformInView(target_transform); }
+        
     }
 }

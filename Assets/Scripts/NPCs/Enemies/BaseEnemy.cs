@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using NPCs.States;
-using NPCs.States.IdleStates;
+using GameManaging;
 using NPCs.States.StateMachines;
 using TriInspector;
 using UnityEngine;
-using static NPCs.States.NPCState;
 
 
 namespace NPCs.Enemies 
@@ -17,7 +14,6 @@ namespace NPCs.Enemies
         /* * * * * * * *
          * Patrolling *
          * * * * * * * */
-        
         // Method specifically used for the Dropdown attribute of patrolType (Creates dropdown list functionality in the inspector)
         private IEnumerable<TriDropdownItem<int>> GetPatrolTypeEnum()
         {
@@ -46,12 +42,8 @@ namespace NPCs.Enemies
         
         
         // HEADER: STANDARD METHODS
-
-        protected BaseEnemy()
-        { }
         
-        // Initialize the IdleState as PatrolState, and the ChaseState as EnemyChaseState, as well as the enemy exclusive SearchState
-        // Add this enemy to the GlobalGameManager
+        // Add this enemy to the GlobalGameManager Enemy List
         protected void Start() { GlobalGameManager.AddEnemy(transform); }
 
 

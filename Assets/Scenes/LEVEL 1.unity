@@ -8844,7 +8844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78be07df34bed4c0c8e939ed93005500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeartPickup
-  healAmount: 1
 --- !u!54 &941882600
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -14031,6 +14030,14 @@ PrefabInstance:
     - target: {fileID: 4519436168995650618, guid: 22b141421a97a429591c5d1f28705d7f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4948506656942844914, guid: 22b141421a97a429591c5d1f28705d7f, type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 8400000, guid: 27bbfa79c3122fe44991c5f68f8aea18, type: 2}
+    - target: {fileID: 4948506656942844914, guid: 22b141421a97a429591c5d1f28705d7f, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 215
       objectReference: {fileID: 0}
     - target: {fileID: 7359119609245670682, guid: 22b141421a97a429591c5d1f28705d7f, type: 3}
       propertyPath: m_Name

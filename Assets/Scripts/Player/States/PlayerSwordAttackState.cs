@@ -11,6 +11,7 @@ namespace Player.States
             player.PlayerMotor.StopHorizontalMovement();
             player.PlayerCombat.BeginSwordAttack();
             player.PlayerAnimator.Play(PlayerAnimation.SWORD_ATTACK);
+            player.PlayerAudio?.PlaySwordSwing();
         }
 
         public override void UpdateState()

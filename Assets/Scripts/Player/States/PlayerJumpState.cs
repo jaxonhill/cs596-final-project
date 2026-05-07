@@ -10,6 +10,7 @@ namespace Player.States
         {
             player.PlayerMotor.Jump();
             player.PlayerAnimator.Play(PlayerAnimation.JUMP);
+            player.PlayerAudio?.PlayJump();
         }
 
         public override void UpdateState()

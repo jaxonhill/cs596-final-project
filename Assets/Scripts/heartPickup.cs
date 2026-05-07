@@ -3,19 +3,19 @@ using UnityEngine;
 public class HeartPickup : MonoBehaviour
 {
     public int healAmount = 1;
+    [SerializeField] private AudioClip pickupSound;
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
-        // Later, your teammate's health script can have a Heal(int amount) method.
-        var health = other.GetComponent("Health");
-
-        if (health != null)
+        // Play sound instantly (independent of object)
+        if (pickupSound != null)
         {
-            health.SendMessage("Heal", healAmount, SendMessageOptions.DontRequireReceiver);
+            AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         }
 
+        // Destroy immediately
         Destroy(gameObject);
     }
 }

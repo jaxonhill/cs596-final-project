@@ -5,14 +5,25 @@ using NPCs.States;
 using NPCs.States.StateMachines;
 using TriInspector;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 namespace NPCs.Enemies 
 {
     /// <summary> The abstract class for defining enemies </summary>
-    [RequireComponent(typeof(EnemyStateMachine))]
+    [RequireComponent(typeof(EnemyStateMachine)), RequireComponent(typeof(AudioSource))]
     public abstract class BaseEnemy : NPC
     {
+
+        [SerializeField] private AudioSource source;
+        [SerializeField] private AudioClip[] clips;
+
+        public enum SoundFile
+        {
+            Scream = 0,
+            Death = 1
+        }
+        
         /* * * * * * * *
          * Patrolling *
          * * * * * * * */
@@ -46,7 +57,11 @@ namespace NPCs.Enemies
         // HEADER: STANDARD METHODS
         
         // Add this enemy to the GlobalGameManager Enemy List
-        protected void Start() { GlobalGameManager.AddEnemy(transform); }
+        protected void Start()
+        {
+            source = GetComponent<AudioSource>();
+            GlobalGameManager.AddEnemy(transform);
+        }
 
 
         // HEADER: GETTERS
@@ -66,6 +81,16 @@ namespace NPCs.Enemies
             if (!collision.transform.TryGetComponent<AttackHitbox>(out var hitbox)) return;
             if (stateMachine.currentState is DamagedState or DieState) return;
             health.OnDamaged(hitbox.Damage);
+        }
+
+        public void PlayAudio(SoundFile sound)
+        {
+            source.PlayOneShot(clips[(int)sound]);
+        }
+
+        public void StopAudio()
+        {
+            source.Stop();
         }
     }
 }

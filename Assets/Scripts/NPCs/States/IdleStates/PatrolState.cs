@@ -107,6 +107,7 @@ namespace NPCs.States.IdleStates
             enemy.transform.rotation = Quaternion.LookRotation(
                 movement.GetDirectionIgnoreY(enemy.target.position)); // Look at target before attacking
             enemy.SetAnimationBool("Walk", false);
+            enemy.PlayAudio(BaseEnemy.SoundFile.Scream);
             await enemy.AwaitAnimationTrigger("Scream");
         }
         

@@ -14,6 +14,11 @@ namespace NPCs.States
         public override async UniTask Enter()
         {
             movement.SetValue(0);
+            if (npc as BaseEnemy)
+            {
+                var enemy = (BaseEnemy)npc;
+                enemy.PlayAudio(BaseEnemy.SoundFile.Death);
+            }
             await npc.AwaitAnimationTrigger("Death");
             GlobalGameManager.RemoveEnemy(npc.transform);
             await UniTask.Delay(1500); 

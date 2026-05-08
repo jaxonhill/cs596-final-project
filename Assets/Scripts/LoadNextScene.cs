@@ -4,6 +4,8 @@ using System.Collections;
 
 public class LoadNextScene : MonoBehaviour
 {
+    private const string DefaultWinSceneName = "YouWin";
+
     [SerializeField] private string nextSceneName = "LEVEL 1";
     [SerializeField] private AudioSource teleportSound;
 
@@ -28,6 +30,7 @@ public class LoadNextScene : MonoBehaviour
             yield return new WaitForSeconds(teleportSound.clip.length);
         }
 
-        SceneManager.LoadScene(nextSceneName);
+        string sceneToLoad = string.IsNullOrWhiteSpace(nextSceneName) ? DefaultWinSceneName : nextSceneName;
+        SceneManager.LoadScene(sceneToLoad);
     }
 }

@@ -9578,6 +9578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78be07df34bed4c0c8e939ed93005500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeartPickup
+  healAmount: 1
+  pickupSound: {fileID: 0}
 --- !u!54 &941882600
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -20673,7 +20675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e259dd9278016443a558affe1f78aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadNextScene
-  nextSceneName: LEVEL 2
+  nextSceneName: Assets/Scenes/LEVEL 2.unity
   teleportSound: {fileID: 2128939921}
 --- !u!82 &2128939921
 AudioSource:

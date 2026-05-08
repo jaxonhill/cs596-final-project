@@ -2,6 +2,7 @@ using Combat;
 using Player;
 using Player.States;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Player
 {
@@ -13,6 +14,8 @@ namespace Player
     [RequireComponent(typeof(PlayerAudio))]
     public class PlayerStateMachine : MonoBehaviour
     {
+        private const string GameOverSceneName = "GameOver";
+
         [Header("Required References")]
         [field: SerializeField] public PlayerInputReader PlayerInput { get; private set; }
         [field: SerializeField] public PlayerMotor PlayerMotor { get; private set; }
@@ -28,6 +31,8 @@ namespace Player
         public PlayerFallState FallState { get; private set; }
         public PlayerRollState RollState { get; private set; }
         public PlayerSwordAttackState SwordAttackState { get; private set; }
+
+        private bool hasTriggeredGameOver;
 
         public void SwitchState(PlayerBaseState newState)
         {
@@ -120,6 +125,14 @@ namespace Player
         private void HandlePlayerDied()
         {
             PlayerAudio?.PlayDeath();
+
+            if (hasTriggeredGameOver)
+            {
+                return;
+            }
+
+            hasTriggeredGameOver = true;
+            SceneManager.LoadScene(GameOverSceneName);
         }
 
         private void LogRequiredReference(Object reference, string fieldName, string componentName)

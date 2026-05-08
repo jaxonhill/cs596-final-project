@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GameManaging
@@ -45,9 +47,9 @@ namespace GameManaging
 
         public static List<Transform> GetTargets(Transform entity)
         {
-            if (friendlies.Contains(entity)) return enemies;
+            if (friendlies.Contains(entity)) return enemies.NotNull().ToList();
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (enemies.Contains(entity)) return friendlies;
+            if (enemies.Contains(entity)) return friendlies.NotNull().ToList();
             return null;
         }
 

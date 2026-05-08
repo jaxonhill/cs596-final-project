@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace Combat
 {
@@ -18,6 +19,9 @@ namespace Combat
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
 
+        public event Action Damaged;
+        public event Action Died;
+
         private void Awake()
         {
             currentHealth = maxHealth;
@@ -27,11 +31,17 @@ namespace Combat
         {
             if (!IsDamageable) return;
 
+            int healthBefore = currentHealth;
             currentHealth -= amount;
+
+            Debug.Log($"[Damageable] {name} took {amount} damage from {source?.name}: {healthBefore} → {currentHealth} HP", this);
+            Damaged?.Invoke();
 
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
+                Debug.Log($"[Damageable] {name} died from {source?.name}", this);
+                Died?.Invoke();
                 return;
             }
 
@@ -43,18 +53,19 @@ namespace Combat
             damageInvincibleUntil = Time.time + duration;
         }
 
-        // ✅ REQUIRED by your roll system
         public void SetStateInvincible(bool isInvincible)
         {
             isStateInvincible = isInvincible;
         }
 
-        // ✅ Healing for heart pickups
         public void Heal(int amount)
         {
             if (amount <= 0) return;
 
+            int healthBefore = currentHealth;
             currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
+            Debug.Log($"[Damageable] {name} healed: {healthBefore} → {currentHealth} HP", this);
         }
     }
 }

@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using TriInspector;
 
 public class LoadNextScene : MonoBehaviour
 {
-    [SerializeField] private string nextSceneName = "LEVEL 1";
+    [SerializeField, Scene] private string nextSceneName = "showcase-scene";
     [SerializeField] private AudioSource teleportSound;
 
     private bool isLoading = false;

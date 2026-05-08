@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Combat;
+using Player;
 using UnityEngine;
 using UnityEngine.UI;
 using Combat;

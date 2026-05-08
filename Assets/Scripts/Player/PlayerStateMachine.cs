@@ -2,6 +2,7 @@ using Combat;
 using Player;
 using Player.States;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Player
 {
@@ -10,14 +11,18 @@ namespace Player
     [RequireComponent(typeof(PlayerAnimator))]
     [RequireComponent(typeof(PlayerCombat))]
     [RequireComponent(typeof(Damageable))]
+    [RequireComponent(typeof(PlayerAudio))]
     public class PlayerStateMachine : MonoBehaviour
     {
+        private const string GameOverSceneName = "GameOver";
+
         [Header("Required References")]
         [field: SerializeField] public PlayerInputReader PlayerInput { get; private set; }
         [field: SerializeField] public PlayerMotor PlayerMotor { get; private set; }
         [field: SerializeField] public PlayerAnimator PlayerAnimator { get; private set; }
         [field: SerializeField] public PlayerCombat PlayerCombat { get; private set; }
         [field: SerializeField] public Damageable PlayerDamageable { get; private set; }
+        [field: SerializeField] public PlayerAudio PlayerAudio { get; private set; }
 
         public PlayerBaseState CurrentState { get; private set; }
         public PlayerIdleState IdleState { get; private set; }
@@ -26,6 +31,8 @@ namespace Player
         public PlayerFallState FallState { get; private set; }
         public PlayerRollState RollState { get; private set; }
         public PlayerSwordAttackState SwordAttackState { get; private set; }
+
+        private bool hasTriggeredGameOver;
 
         public void SwitchState(PlayerBaseState newState)
         {
@@ -61,6 +68,20 @@ namespace Player
             }
 
             SwitchState(IdleState);
+
+            PlayerDamageable.Damaged += HandlePlayerDamaged;
+            PlayerDamageable.Died += HandlePlayerDied;
+        }
+
+        private void OnDestroy()
+        {
+            if (PlayerDamageable == null)
+            {
+                return;
+            }
+
+            PlayerDamageable.Damaged -= HandlePlayerDamaged;
+            PlayerDamageable.Died -= HandlePlayerDied;
         }
 
         private void Update()
@@ -82,7 +103,8 @@ namespace Player
                 && PlayerMotor != null
                 && PlayerAnimator != null
                 && PlayerCombat != null
-                && PlayerDamageable != null;
+                && PlayerDamageable != null
+                && PlayerAudio != null;
         }
 
         private void LogRequiredReferences()
@@ -92,6 +114,25 @@ namespace Player
             LogRequiredReference(PlayerAnimator, nameof(PlayerAnimator), typeof(PlayerAnimator).Name);
             LogRequiredReference(PlayerCombat, nameof(PlayerCombat), typeof(PlayerCombat).Name);
             LogRequiredReference(PlayerDamageable, nameof(PlayerDamageable), typeof(Damageable).Name);
+            LogRequiredReference(PlayerAudio, nameof(PlayerAudio), typeof(PlayerAudio).Name);
+        }
+
+        private void HandlePlayerDamaged()
+        {
+            PlayerAudio?.PlayTakeDamage();
+        }
+
+        private void HandlePlayerDied()
+        {
+            PlayerAudio?.PlayDeath();
+
+            if (hasTriggeredGameOver)
+            {
+                return;
+            }
+
+            hasTriggeredGameOver = true;
+            SceneManager.LoadScene(GameOverSceneName);
         }
 
         private void LogRequiredReference(Object reference, string fieldName, string componentName)
@@ -106,4 +147,3 @@ namespace Player
         }
     }
 }
-

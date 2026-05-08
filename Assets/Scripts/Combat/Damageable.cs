@@ -21,54 +21,40 @@ namespace Combat
         private void Awake()
         {
             currentHealth = maxHealth;
-            Debug.Log($"[Damageable] {name} initialized: {currentHealth}/{maxHealth} HP", this);
         }
 
         public void TakeDamage(int amount, GameObject source)
         {
-            if (!IsDamageable)
-            {
-                Debug.Log($"[Damageable] {name} ignored {amount} damage from {source?.name} — invincible until {damageInvincibleUntil:F2}", this);
-                return;
-            }
+            if (!IsDamageable) return;
 
-            int healthBefore = currentHealth;
             currentHealth -= amount;
-            Debug.Log($"[Damageable] {name} took {amount} damage from {source?.name}: {healthBefore} → {currentHealth} HP", this);
 
             if (currentHealth <= 0)
             {
                 currentHealth = 0;
-                Debug.Log($"[Damageable] {name} died from {source?.name}", this);
-                // Death handling can be hooked here later
                 return;
             }
 
             BeginTimedInvincibility(damageInvincibilityDuration);
         }
 
-        public void SetStateInvincible(bool isInvincible)
-        {
-            isStateInvincible = isInvincible;
-            Debug.Log($"[Damageable] {name} state invincibility = {isInvincible}", this);
-        }
-
         public void BeginTimedInvincibility(float duration)
         {
             damageInvincibleUntil = Time.time + duration;
-            Debug.Log($"[Damageable] {name} timed invincibility started until {damageInvincibleUntil:F2}", this);
         }
 
+        // ✅ REQUIRED by your roll system
+        public void SetStateInvincible(bool isInvincible)
+        {
+            isStateInvincible = isInvincible;
+        }
+
+        // ✅ Healing for heart pickups
         public void Heal(int amount)
         {
-            if (amount <= 0 || currentHealth <= 0)
-            {
-                return;
-            }
+            if (amount <= 0) return;
 
-            int healthBefore = currentHealth;
             currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-            Debug.Log($"[Damageable] {name} healed: {healthBefore} → {currentHealth} HP", this);
         }
     }
 }

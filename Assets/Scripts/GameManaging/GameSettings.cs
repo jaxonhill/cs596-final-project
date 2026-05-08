@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameManaging
 {
@@ -13,7 +14,15 @@ namespace GameManaging
         {
             settingsObject = Resources.Load<GameSettingsObject>("GameSettingsObject");
             Debug = settingsObject.Debug;
+            GlobalGameManager.ClearLists();
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
+
+        private static void OnSceneUnloaded(Scene _scene)
+        {
+            GlobalGameManager.ClearLists();
+        }
+        
     }
 }
 

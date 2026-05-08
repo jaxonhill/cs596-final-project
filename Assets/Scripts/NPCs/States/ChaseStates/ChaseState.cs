@@ -35,6 +35,12 @@ namespace NPCs.States.ChaseStates
         // Follow the target, check if they are still in sight and if they are in range for an attack
         public override async UniTask Run()
         {
+            if(!npc.target)
+            {
+                _ = stateMachine.ChangeToState(NPCStateEnum.Chasing, NPCStateEnum.Idle);
+                return;
+            }
+            
             FollowTarget(); // NPC will follow their target
             
             if(!CheckIfInSight()) { IfLost(); } // If the NPC loses sight of the target

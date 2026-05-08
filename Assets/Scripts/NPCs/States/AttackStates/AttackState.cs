@@ -16,7 +16,17 @@ namespace NPCs.States.AttackStates
         // HEADER: STATE METHODS
         /* ReSharper disable Unity.PerformanceAnalysis
         ReSharper disable once AsyncVoidMethod*/
-        public override async UniTask Enter()
+        public override UniTask Enter()
+        {
+            _ = AttackMethod();
+            return UniTask.CompletedTask;
+        }
+        
+        public override UniTask Run() { return UniTask.CompletedTask; }
+
+        public override UniTask Exit() { return UniTask.CompletedTask; }
+
+        private async UniTask AttackMethod()
         {
             npc.transform.rotation = Quaternion.LookRotation(
                 movement.GetDirectionIgnoreY(npc.target.position)); // Look at target before attacking
@@ -39,10 +49,6 @@ namespace NPCs.States.AttackStates
             _ = Enter(); 
         }
         
-        public override UniTask Run() { return UniTask.CompletedTask; }
-
-        public override UniTask Exit() { return UniTask.CompletedTask; }
-
         protected abstract UniTask DoAttack();
         
         // HEADER: HELPER METHODS

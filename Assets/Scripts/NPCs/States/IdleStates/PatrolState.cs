@@ -83,7 +83,8 @@ namespace NPCs.States.IdleStates
             // SET DEFAULTS
             enemy.SetTarget(NO_TARGET);
             movement.SetValue(movement.defaultSpeed); 
-            patrolIndex = FIRST_MARKER; 
+            patrolIndex = FIRST_MARKER;
+            if (patrolMarkers.Count <= 0) return UniTask.CompletedTask;
             SetNewPath(); // Create a path to the first marker
             
             return UniTask.CompletedTask;
@@ -94,15 +95,17 @@ namespace NPCs.States.IdleStates
         {
             FindPrimaryTarget(); // Look for a target
             
-            if (!pause) Patrol(); // If patrolling is not paused, patrol
+            if (!pause && patrolMarkers.Count > 0) Patrol(); // If patrolling is not paused, patrol
             
             return UniTask.CompletedTask;
         }
 
         // Do Exit Functionality and Exit Animations
-        public override async UniTask Exit() {
-            npc.transform.rotation = Quaternion.LookRotation(
-                movement.GetDirectionIgnoreY(npc.target.position)); // Look at target before attacking
+        public override async UniTask Exit()
+        {
+            if (!enemy.target) return;
+            enemy.transform.rotation = Quaternion.LookRotation(
+                movement.GetDirectionIgnoreY(enemy.target.position)); // Look at target before attacking
             enemy.SetAnimationBool("Walk", false);
             await enemy.AwaitAnimationTrigger("Scream");
         }

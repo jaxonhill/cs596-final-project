@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using TriInspector;
 
 public class LoadNextScene : MonoBehaviour
 {
-    private const string DefaultWinSceneName = "YouWin";
-
-    [SerializeField] private string nextSceneName = "LEVEL 1";
+    [SerializeField, Scene] private string nextSceneName = "showcase-scene";
     [SerializeField] private AudioSource teleportSound;
 
     private bool isLoading = false;
@@ -30,7 +29,6 @@ public class LoadNextScene : MonoBehaviour
             yield return new WaitForSeconds(teleportSound.clip.length);
         }
 
-        string sceneToLoad = string.IsNullOrWhiteSpace(nextSceneName) ? DefaultWinSceneName : nextSceneName;
-        SceneManager.LoadScene(sceneToLoad);
+        SceneManager.LoadScene(nextSceneName);
     }
 }

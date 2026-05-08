@@ -1,21 +1,30 @@
 using UnityEngine;
+using Combat;
 
 public class HeartPickup : MonoBehaviour
 {
-    public int healAmount = 1;
+    [SerializeField] private int healAmount = 1;
     [SerializeField] private AudioClip pickupSound;
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
-        // Play sound instantly (independent of object)
+        // Get player's health
+        Damageable damageable = other.GetComponentInParent<Damageable>();
+
+        if (damageable != null)
+        {
+            damageable.Heal(healAmount);
+        }
+
+        // Play sound
         if (pickupSound != null)
         {
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         }
 
-        // Destroy immediately
+        // Destroy heart
         Destroy(gameObject);
     }
 }

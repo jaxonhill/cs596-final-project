@@ -2,15 +2,14 @@
 - **Group Name:** Team Dungeon Break
 - **Game Name:** Dungeon Break
 
+# Final Gameplay Demo Video Link
+https://drive.google.com/file/d/15spPe4KoRD7W_440kxlMuYM2L5feQEO0/view?usp=sharing
+
 ---
 
 # Game Description
 
-**Dungeon Break** is a top-down 2D dungeon adventure game inspired by classic Zelda-style room-based dungeon design. The player explores a stylized dungeon, clears combat and puzzle rooms, collects three magical symbols, and uses those symbols to unlock the final chamber. The game focuses on readable combat, enemy variety, puzzle-based progression, and a polished toon-outlined or pixel style visual style.
-
-The core playable slice is one complete dungeon made of a hub room, three enemy challenge rooms, one final puzzle room, and one boss room. Each enemy room introduces a unique enemy interaction that teaches the player a mechanic. The final puzzle and boss then combine those learned mechanics, so the player has to apply what they practiced earlier instead of simply fighting stronger enemies.
-
-Our main **X-factors** are enemy variety and custom shaders. The enemies are not just basic chasers; each type changes how the player approaches combat. One enemy rewards positioning, one turns enemy behavior into a puzzle tool, and one requires timing and projectile reflection. The toon shader gives the game a more distinct visual identity and helps it stand out from a basic 2D dungeon prototype.
+**Dungeon Break** is a dungeon adventure game inspired by classic Zelda-style room-based dungeon design. The player explores a stylized dungeon and clears rooms with dynamic combat. The game focuses on readable combat, enemy variety, and a pixel style visual style. Our main **X-factor(s)** is mobile and the custom shader.
 
 ---
 
@@ -18,13 +17,10 @@ Our main **X-factors** are enemy variety and custom shaders. The enemies are not
 
 The player should be able to:
 
-- Move through a top-down dungeon
+- Move through a dungeon with mobile controls
 - Attack enemies with a sword
 - Take and deal damage through a health system
 - Clear rooms by defeating enemies or solving room-specific challenges
-- Collect three dungeon symbols
-- Use learned mechanics to solve a final puzzle
-- Defeat a final boss that combines the previous enemy mechanics
 
 ---
 
@@ -37,11 +33,9 @@ The minimum playable version will include:
 - One player character
 - One sword attack
 - One health system
-- One hub room
-- Three enemy rooms
-- Three unique enemy types
-- One final puzzle room
-- One boss room
+- Mobile controls
+- Enemy rooms
+- Unique enemy types
 - One main shader and various others where needed
 - Basic sound effects
 - Git repo with clean organization
@@ -52,21 +46,11 @@ The minimum playable version will include:
 
 ## Enemy Variety
 
-The game’s main gameplay X-factor is the variety of enemy interactions. Instead of only having enemies chase and damage the player, each enemy type changes the way the player thinks.
+The game’s main X-factor is the mobile controls. The player will be able to move using a joystick UI on the screen, as well as attack and roll using various buttons. The player will also be able to look around by dragging.
 
-These enemies are also reused in the final puzzle and boss fight so the mechanics feel connected.
+## Pixel Shader
 
-## Toon Outline Shader
-
-The visual X-factor is a custom toon outline shader or pixel art shader. This will give the game a more stylized, cartoon-like look and help distinguish important objects, enemies, and characters from the background.
-
-The shader may be applied to:
-
-- Player character
-- Enemies
-- Boss
-- Important puzzle objects
-- Environmental props
+The visual X-factor is a pixel art shader. This will give the game a more stylized look and help distinguish important objects, enemies, and characters from the background.
 
 ---
 
@@ -74,11 +58,11 @@ The shader may be applied to:
 
 | Member | Role | Responsibilities |
 |---|---|---|
-| Chris Lepe Tenorio | Health, Attack, Patrol Attributes | Player health, damage logic, attack behavior, patrol-related values |
-| Matthew Guiao | Art & UI | Visual assets, UI elements, symbol icons, player/enemy polish |
+| Chris Lepe Tenorio | Health, Attack, Patrol Attributes, Help with Enemy AI | Player health, damage logic, attack behavior, patrol-related values |
+| Matthew Guiao | Shaders, Art, and UI | Visual assets, UI elements, symbol icons, player/enemy polish |
 | Justin Adams | Enemy AI | Enemy behavior, state logic, unique enemy interactions |
 | Nathan Morales | Level Design & Sound | Room layouts, puzzle placement, sound effects |
-| Jaxon Hill | Player & Camera Implementation, help with Enemy AI | Player controller, camera follow, core feel, integration support |
+| Jaxon Hill | Player & Camera Implementation, mobile controls | Player controller, camera follow, core feel, integration support, mobile controls |
 | Nazim Sultanov | Level Implementation | Building rooms in Unity, connecting spaces, implementing level flow |
 
 ---
@@ -92,7 +76,6 @@ The repository will include:
 - Script folders by system
 - Art and sound asset folders
 - README file
-- Initial project skeleton
 - Regular commits from team members
 
 ---
